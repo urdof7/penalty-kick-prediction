@@ -23,9 +23,9 @@ os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
-cursor.execute("""DROP TABLE IF EXISTS kicks""")
-cursor.execute("""DROP TABLE IF EXISTS videos""")
-cursor.execute("""DROP TABLE IF EXISTS frames""")
+# cursor.execute("""DROP TABLE IF EXISTS kicks""")
+# cursor.execute("""DROP TABLE IF EXISTS videos""")
+# cursor.execute("""DROP TABLE IF EXISTS frames""")
 
 # Create the videos and kicks tables if they don't exist
 cursor.execute("""
@@ -51,11 +51,13 @@ cursor.execute("""
 
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS frames (
-        frame_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        kick_id INTEGER,
+    frame_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kick_id INTEGER,
+    video_id INTEGER,
         frame_no INTEGER,
         frame_path TEXT,
         FOREIGN KEY (kick_id) REFERENCES kicks(kick_id),
+        FOREIGN KEY (video_id) REFERENCES videos(video_id),
         UNIQUE (kick_id, frame_no)
     )
 """)
@@ -106,7 +108,7 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
 
     # Insert the kick into the kicks table and get the kick_id
     cursor.execute("""
-        INSERT INTO kicks (video_id, timestamp, kick_direction, player_name, player_team, goal_scored)
+        INSERT OR IGNORE INTO kicks (video_id, timestamp, kick_direction, player_name, player_team, goal_scored)
         VALUES (?, ?, ?, ?, ?, ?)
     """, (video_id, timestamp, direction, player_name, player_team, goal_scored))
     conn.commit()
@@ -128,18 +130,14 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     for i in range(num_frames * 2 + 1):
         frame_time = max(t + ((i - num_frames) / frame_rate), 0)
         output_file = f"data/frames/VID_{video_id}_KICK_{kick_id}_FRAME_{i:03d}.png"
-        frames_data.append((kick_id, i - num_frames, os.path.relpath(output_file, PROJECT_ROOT)))
+        frames_data.append((kick_id, video_id, i - num_frames, os.path.relpath(output_file, PROJECT_ROOT)))
 
     # Insert all frame data into the frames table in one go
     cursor.executemany("""
-        INSERT OR IGNORE INTO frames (kick_id, frame_no, frame_path)
-        VALUES (?, ?, ?)
+        INSERT OR IGNORE INTO frames (kick_id, video_id, frame_no, frame_path)
+        VALUES (?, ?, ?, ?)
     """, frames_data)
     conn.commit()
-
-    
-
-from kick_data import kick_data  # Import the kick data
 
 # Loop through kick data and call extract_frames
 for kick in kick_data:
