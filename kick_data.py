@@ -46,7 +46,7 @@ kick_data = [
     },
     {
         "video_name": "Argentina v France： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup Final [MCWJNOfJoSM].mp4",
-        "timestamp": "04:15",
+        "timestamp": "04:15.5",
         "direction": 4,
         "player_name": None,
         "player_team": "Argentina",
