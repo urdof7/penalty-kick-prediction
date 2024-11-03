@@ -52,5 +52,23 @@ kick_data = [
         "player_team": "Argentina",
         "goal_scored": True,
         "num_frames": 10
+    },
+    {
+        "video_name": "Argentina v France： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup Final [MCWJNOfJoSM].mp4",
+        "timestamp": "05:05.5",
+        "direction": 2,
+        "player_name": None,
+        "player_team": "France",
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Argentina v France： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup Final [MCWJNOfJoSM].mp4",
+        "timestamp": "05:51.5",
+        "direction": 4,
+        "player_name": None,
+        "player_team": "Argentina",
+        "goal_scored": True,
+        "num_frames": 10
     }
 ]
