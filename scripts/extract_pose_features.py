@@ -3,7 +3,7 @@ import cv2
 import mediapipe as mp
 import sqlite3
 import logging
-from pose_data_setup import insert_pose_feature, get_pose_data_connection
+from pose_data_setup import insert_pose_feature, get_pose_data_connection, initialize_pose_data
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -92,6 +92,9 @@ def extract_frames_from_kick_data():
     Extracts frames from the kick_data database and processes them using Mediapipe.
     Only frames that exist in the kick_data database are processed to ensure consistency.
     """
+    # Initialize pose_data database to clear previous data
+    initialize_pose_data()
+
     # Open kick_data database connection
     kick_conn = get_kick_data_connection()
     kick_cursor = kick_conn.cursor()
