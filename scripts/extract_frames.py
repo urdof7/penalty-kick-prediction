@@ -54,11 +54,11 @@ cursor.execute("""
     frame_id INTEGER PRIMARY KEY AUTOINCREMENT,
     kick_id INTEGER,
     video_id INTEGER,
-        frame_no INTEGER,
-        frame_path TEXT,
-        FOREIGN KEY (kick_id) REFERENCES kicks(kick_id),
-        FOREIGN KEY (video_id) REFERENCES videos(video_id),
-        UNIQUE (kick_id, frame_no)
+    frame_no INTEGER,
+    frame_path TEXT,
+    FOREIGN KEY (kick_id) REFERENCES kicks(kick_id),
+    FOREIGN KEY (video_id) REFERENCES videos(video_id),
+    UNIQUE (kick_id, frame_no)
     )
 """)
 
