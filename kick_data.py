@@ -70,5 +70,44 @@ kick_data = [
         "player_team": "Argentina",
         "goal_scored": True,
         "num_frames": 10
-    }
+    },
+
+    #next video
+
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "00:15.4",
+        "direction": 2,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "01:00.0",
+        "direction": 6,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "01:51.0",
+        "direction": 5,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "02:29.8",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
 ]
