@@ -2,7 +2,11 @@ import os
 import cv2
 import mediapipe as mp
 import sqlite3
-from pose_data_setup import insert_pose_feature
+import logging
+from pose_data_setup import insert_pose_feature, get_pose_data_connection
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Initialize Mediapipe Pose
 mp_pose = mp.solutions.pose
@@ -23,16 +27,36 @@ def get_kick_data_connection():
     """
     return sqlite3.connect(KICK_DB_PATH)
 
-def extract_pose_features_from_frame(frame_path, frame_id):
+def extract_pose_features_from_frame(frame_path, frame_id, conn):
     """
     Extracts pose features from a given frame using Mediapipe and inserts them into the database.
     :param frame_path: Path to the frame image
     :param frame_id: ID of the frame
+    :param conn: Database connection to reuse
     """
+    # List of relevant landmarks for kicking (lower body and torso)
+    relevant_landmarks = [
+        mp_pose.PoseLandmark.LEFT_HIP,
+        mp_pose.PoseLandmark.RIGHT_HIP,
+        mp_pose.PoseLandmark.LEFT_KNEE,
+        mp_pose.PoseLandmark.RIGHT_KNEE,
+        mp_pose.PoseLandmark.LEFT_ANKLE,
+        mp_pose.PoseLandmark.RIGHT_ANKLE,
+        mp_pose.PoseLandmark.LEFT_FOOT_INDEX,
+        mp_pose.PoseLandmark.RIGHT_FOOT_INDEX,
+        mp_pose.PoseLandmark.LEFT_SHOULDER,
+        mp_pose.PoseLandmark.RIGHT_SHOULDER,
+        mp_pose.PoseLandmark.LEFT_ELBOW,
+        mp_pose.PoseLandmark.RIGHT_ELBOW,
+        mp_pose.PoseLandmark.LEFT_WRIST,
+        mp_pose.PoseLandmark.RIGHT_WRIST
+    ]
+
     # Read the frame image
     image = cv2.imread(frame_path)
     if image is None:
-        raise ValueError(f"Error reading frame: {frame_path}. The frame does not exist or cannot be accessed.")
+        logging.error(f"Error reading frame: {frame_path}. The frame does not exist or cannot be accessed.")
+        return
 
     # Convert BGR image to RGB
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -43,9 +67,11 @@ def extract_pose_features_from_frame(frame_path, frame_id):
     # Check if pose landmarks were detected
     if results.pose_landmarks:
         # Iterate over the detected landmarks and insert pose features into the database
-        for idx, landmark in enumerate(results.pose_landmarks.landmark):
-            landmark_name = mp_pose.PoseLandmark(idx).name
-            print(f"Inserting landmark {landmark_name} with frame_id={frame_id}")
+        for landmark_enum in relevant_landmarks:
+            idx = landmark_enum.value
+            landmark = results.pose_landmarks.landmark[idx]
+            landmark_name = landmark_enum.name
+            logging.debug(f"Inserting landmark {landmark_name} with frame_id={frame_id}")
             try:
                 insert_pose_feature(
                     frame_id=frame_id,
@@ -56,16 +82,10 @@ def extract_pose_features_from_frame(frame_path, frame_id):
                     visibility=landmark.visibility
                 )
             except sqlite3.Error as e:
-                print(f"Error inserting pose feature for landmark {landmark_name}: {e}")
-
-        # Optional: Draw the landmarks on the frame and save for reference
-        annotated_image = image.copy()
-        mp_drawing.draw_landmarks(annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-        annotated_frame_path = frame_path.replace('.png', '_annotated.png')
-        cv2.imwrite(annotated_frame_path, annotated_image)
-        print(f"Pose features extracted and saved for frame: {frame_path}")
+                logging.error(f"Error inserting pose feature for landmark {landmark_name}: {e}")
+        logging.info(f"Pose features extracted and saved for frame: {frame_path}")
     else:
-        raise ValueError(f"No pose landmarks detected for frame: {frame_path}. Analysis cannot proceed without landmarks.")
+        logging.warning(f"No pose landmarks detected for frame: {frame_path}. Analysis cannot proceed without landmarks.")
 
 def extract_frames_from_kick_data():
     """
@@ -85,13 +105,13 @@ def extract_frames_from_kick_data():
         # Construct the full path relative to the project root
         full_frame_path = os.path.join(PROJECT_ROOT, frame_path)
         if os.path.exists(full_frame_path):
-            try:
-                extract_pose_features_from_frame(full_frame_path, frame_id)
-            except ValueError as e:
-                print(e)
+            pose_conn = get_pose_data_connection()
+            extract_pose_features_from_frame(full_frame_path, frame_id, pose_conn)
+            pose_conn.close()
         else:
-            print(f"Frame path does not exist: {full_frame_path}")
+            logging.warning(f"Frame path does not exist: {full_frame_path}")
 
+    # Close connections
     kick_conn.close()
 
 # Example usage
