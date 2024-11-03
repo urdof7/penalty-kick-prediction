@@ -66,6 +66,14 @@ def extract_pose_features_from_frame(frame_path, frame_id, conn):
 
     # Check if pose landmarks were detected
     if results.pose_landmarks:
+        # Draw landmarks on the image
+        annotated_image = image.copy()
+        mp_drawing.draw_landmarks(annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+        # Save the annotated image
+        annotated_image_path = frame_path.replace('.png', '_annotated.png')
+        cv2.imwrite(annotated_image_path, annotated_image)
+
         # Iterate over the detected landmarks and insert pose features into the database
         for landmark_enum in relevant_landmarks:
             idx = landmark_enum.value
