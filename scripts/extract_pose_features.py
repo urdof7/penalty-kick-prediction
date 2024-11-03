@@ -16,10 +16,12 @@ mp_drawing = mp.solutions.drawing_utils
 # Define the path to frames and database
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 FRAMES_PATH = os.path.join(PROJECT_ROOT, 'data', 'frames')
+ANNOTATED_FRAMES_PATH = os.path.join(PROJECT_ROOT, 'data', 'annotated_frames')
 KICK_DB_PATH = os.path.join(PROJECT_ROOT, 'data', 'kick_data.db')
 
-# Ensure the frames directory exists
+# Ensure the frames and annotated frames directories exist
 os.makedirs(FRAMES_PATH, exist_ok=True)
+os.makedirs(ANNOTATED_FRAMES_PATH, exist_ok=True)
 
 def get_kick_data_connection():
     """
@@ -71,7 +73,7 @@ def extract_pose_features_from_frame(frame_path, frame_id, conn):
         mp_drawing.draw_landmarks(annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
         # Save the annotated image
-        annotated_image_path = frame_path.replace('.png', '_annotated.png')
+        annotated_image_path = os.path.join(ANNOTATED_FRAMES_PATH, os.path.basename(frame_path).replace('.png', '_annotated.png'))
         cv2.imwrite(annotated_image_path, annotated_image)
 
         # Iterate over the detected landmarks and insert pose features into the database
