@@ -11,7 +11,7 @@ from kick_data import kick_data  # Import the kick data
 
 # Define paths relative to the project root
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-VIDEO_DIR = os.path.join(PROJECT_ROOT, "data/videos")
+VIDEO_DIR = os.path.join(PROJECT_ROOT, "data/raw_videos")
 FRAME_DIR = os.path.join(PROJECT_ROOT, "data/frames")
 DB_PATH = os.path.join(PROJECT_ROOT, "data/kick_data.db")
 
@@ -23,9 +23,9 @@ os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
-# cursor.execute("""DROP TABLE IF EXISTS kicks""")
-# cursor.execute("""DROP TABLE IF EXISTS videos""")
-# cursor.execute("""DROP TABLE IF EXISTS frames""")
+cursor.execute("""DROP TABLE IF EXISTS kicks""")
+cursor.execute("""DROP TABLE IF EXISTS videos""")
+cursor.execute("""DROP TABLE IF EXISTS frames""")
 
 # Create the videos and kicks tables if they don't exist
 cursor.execute("""
@@ -82,7 +82,7 @@ def get_frame_rate(video_path):
     return num / denom
 
 # Function to extract frames around a given timestamp
-def extract_frames(video_name, timestamp, direction, player_name, player_team, goal_scored, num_frames=10):
+def extract_frames(video_name, timestamp, direction, player_name, player_team, goal_scored, num_frames):
     # Insert the video into the videos table if it doesn't exist and get the video_id
     cursor.execute("""
         INSERT OR IGNORE INTO videos (original_name)
@@ -101,10 +101,11 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     video_path = os.path.join(VIDEO_DIR, video_name)
     frame_rate = get_frame_rate(video_path)
 
-    # Calculate start and end times for frame extraction
-    start_time = max(t - (num_frames / frame_rate), 0)
-    end_time = t + (num_frames / frame_rate)
-    duration = end_time - start_time
+    # Calculate the start time and total duration for frame extraction
+    duration_before = num_frames / frame_rate
+    duration_after = num_frames / frame_rate
+    start_time = max(t - duration_before, 0)
+    total_duration = duration_before + (1 / frame_rate) + duration_after
 
     # Insert the kick into the kicks table and get the kick_id
     cursor.execute("""
@@ -121,16 +122,15 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     output_pattern = f"{FRAME_DIR}/VID_{video_id}_KICK_{kick_id}_FRAME_%03d.png"
     command = [
         "ffmpeg", "-ss", str(start_time), "-i", video_path,
-        "-t", str(duration), "-vf", f"fps={frame_rate}", output_pattern
+        "-t", str(total_duration), "-vf", f"fps={frame_rate}", "-start_number", "1", output_pattern
     ]
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # Prepare frame data for database insertion
     frames_data = []
-    for i in range(num_frames * 2 + 1):
-        frame_time = max(t + ((i - num_frames) / frame_rate), 0)
+    for i in range(1, 2 * num_frames + 1 + 1):
         output_file = f"data/frames/VID_{video_id}_KICK_{kick_id}_FRAME_{i:03d}.png"
-        frames_data.append((kick_id, video_id, i - num_frames, os.path.relpath(output_file, PROJECT_ROOT)))
+        frames_data.append((kick_id, video_id, i, os.path.relpath(output_file, PROJECT_ROOT)))
 
     # Insert all frame data into the frames table in one go
     cursor.executemany("""
@@ -140,6 +140,7 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     conn.commit()
 
 # Loop through kick data and call extract_frames
+num_frames = 10  # Set the default number of frames to extract before and after the timestamp
 for kick in kick_data:
     extract_frames(
         video_name=kick["video_name"],
@@ -148,7 +149,7 @@ for kick in kick_data:
         player_name=kick["player_name"],
         player_team=kick["player_team"],
         goal_scored=kick["goal_scored"],
-        num_frames=kick["num_frames"]
+        num_frames=num_frames
     )
 
 conn.close()
