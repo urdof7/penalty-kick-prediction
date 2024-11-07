@@ -110,4 +110,131 @@ kick_data = [
         "goal_scored": True,
         "num_frames": 10
     },
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "03:18.4",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "04:01.7",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
+        "timestamp": "04:46.4",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+     {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "00:54.4",
+        "direction": 2,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "01:38.1",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "02:22.0",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "02:22.0",
+        "direction": 1,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+         {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "03:02.6",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "03:56.6",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "04:27.6 ",
+        "direction": 6,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "05:16.1 ",
+        "direction": 3,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": False,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "06:13.7  ",
+        "direction": 1,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "07:33.5 ",
+        "direction": 2,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
+        "timestamp": "07:33.5 ",
+        "direction": 2,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+
 ]
