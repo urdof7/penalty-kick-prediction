@@ -1,4 +1,3 @@
-
 # Directions:
 # 1 - Top left
 # 2 - Middle top
@@ -137,6 +136,10 @@ kick_data = [
         "goal_scored": True,
         "num_frames": 10
     },
+
+    #next video 
+
+    
      {
         "video_name": "Colombia v England： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [NtvUzy00DuU].mp4",
         "timestamp": "00:54.4",
@@ -237,4 +240,97 @@ kick_data = [
         "num_frames": 10
     },
 
+    #next video
+
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "01:12.08",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": False,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "01:45.64",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": False,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "02:40.92",
+        "direction": 3,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "03:24.84",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "04:18.16",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "05:05.16",
+        "direction": 5,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "05:55.68",
+        "direction": 1,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": False,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "07:04.24",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": False,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "07:56.24",
+        "direction": 5,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": False,
+        "num_frames": 10
+    },
+    {
+        "video_name": "Croatia v Denmark： Full Penalty Shoot-out ｜ 2018 #FIFAWorldCup Round of 16 [lO36Q8Uj2bE].mp4",
+        "timestamp": "08:53.32",
+        "direction": 4,
+        "player_name": None,
+        "player_team": None,
+        "goal_scored": True,
+        "num_frames": 10
+    },
 ]
+
