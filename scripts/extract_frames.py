@@ -83,16 +83,26 @@ def get_frame_rate(video_path):
 
 # Function to extract frames around a given timestamp
 def extract_frames(video_name, timestamp, direction, player_name, player_team, goal_scored, num_frames):
-    # Insert the video into the videos table if it doesn't exist and get the video_id
-    cursor.execute("""
-        INSERT OR IGNORE INTO videos (original_name)
-        VALUES (?)
-    """, (video_name,))
-    conn.commit()
+    # Check if the video already exists in the videos table
     cursor.execute("""
         SELECT video_id FROM videos WHERE original_name = ?
     """, (video_name,))
-    video_id = cursor.fetchone()[0]
+    row = cursor.fetchone()
+    
+    if row is None:
+        # Insert the video into the videos table if it doesn't exist
+        cursor.execute("""
+            INSERT INTO videos (original_name)
+            VALUES (?)
+        """, (video_name,))
+        conn.commit()
+        # Re-fetch the video_id after insertion
+        cursor.execute("""
+            SELECT video_id FROM videos WHERE original_name = ?
+        """, (video_name,))
+        video_id = cursor.fetchone()[0]
+    else:
+        video_id = row[0]
 
     # Calculate seconds before and after the given timestamp
     t = int(timestamp.split(':')[0]) * 60 + float(timestamp.split(':')[1])
@@ -107,6 +117,12 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     start_time = max(t - duration_before, 0)
     total_duration = duration_before + (1 / frame_rate) + duration_after
 
+    # Get the current kick number for the video
+    cursor.execute("""
+        SELECT COUNT(*) + 1 FROM kicks WHERE video_id = ?
+    """, (video_id,))
+    kick_number = cursor.fetchone()[0]
+
     # Insert the kick into the kicks table and get the kick_id
     cursor.execute("""
         INSERT OR IGNORE INTO kicks (video_id, timestamp, kick_direction, player_name, player_team, goal_scored)
@@ -119,7 +135,7 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     kick_id = cursor.fetchone()[0]
 
     # Batch extract frames using ffmpeg
-    output_pattern = f"{FRAME_DIR}/VID_{video_id}_KICK_{kick_id}_FRAME_%03d.png"
+    output_pattern = f"{FRAME_DIR}/VID_{video_id}_KICK_{kick_number}_FRAME_%03d.png"
     command = [
         "ffmpeg", "-ss", str(start_time), "-i", video_path,
         "-t", str(total_duration), "-vf", f"fps={frame_rate}", "-start_number", "1", output_pattern
@@ -129,7 +145,7 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     # Prepare frame data for database insertion
     frames_data = []
     for i in range(1, 2 * num_frames + 1 + 1):
-        output_file = f"data/frames/VID_{video_id}_KICK_{kick_id}_FRAME_{i:03d}.png"
+        output_file = f"data/frames/VID_{video_id}_KICK_{kick_number}_FRAME_{i:03d}.png"
         frames_data.append((kick_id, video_id, i, os.path.relpath(output_file, PROJECT_ROOT)))
 
     # Insert all frame data into the frames table in one go
