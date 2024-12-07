@@ -1,3 +1,8 @@
+'''
+Description: This program gets the data from kick_data via kick_data.py, and inserts them into the kick_data.db. 
+Note: make sure to run program only when you are in the "./penalty-kick-prediction" directory; run this program before running extract_pose_features.py.
+'''
+
 import os
 import sys
 import sqlite3
