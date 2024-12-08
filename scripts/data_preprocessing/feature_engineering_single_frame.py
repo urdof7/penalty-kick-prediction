@@ -6,18 +6,15 @@ from math import atan2, degrees
 
 def compute_angle(p1, p2, p3):
     # Compute angle at p2 formed by p1->p2->p3
+    # p1, p2, p3 are (x,y) coordinates
     v1 = (p1[0]-p2[0], p1[1]-p2[1])
     v2 = (p3[0]-p2[0], p3[1]-p2[1])
     angle = degrees(atan2(v2[1], v2[0]) - atan2(v1[1], v1[0]))
     return angle + 360 if angle < 0 else angle
 
-# ---------------------------------------------------------
-# Determine Paths
-# ---------------------------------------------------------
-# Current file is in: PK_PREDICTION/scripts/data_processing/feature_engineering_single_frame.py
-# We need to go up three directories to reach PK_PREDICTION.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+# We assume we're running from the project root directory: PK_PREDICTION/
+# So we can define relative paths directly.
+DATA_DIR = 'data'
 PROCESSED_DIR = os.path.join(DATA_DIR, 'processed', 'single_frame')
 
 kick_db_path = os.path.join(DATA_DIR, 'kick_data.db')
@@ -25,13 +22,11 @@ pose_db_path = os.path.join(DATA_DIR, 'pose_data.db')
 
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 
-# ---------------------------------------------------------
 # Connect to Databases
-# ---------------------------------------------------------
 kick_conn = sqlite3.connect(kick_db_path)
 pose_conn = sqlite3.connect(pose_db_path)
 
-# Load Data and Filter for Mid-Swing Frame (frame_no = 11)
+# Load Data for mid-swing frame_no = 11
 df_frames = pd.read_sql_query("SELECT * FROM frames WHERE frame_no = 11", kick_conn)
 df_kicks = pd.read_sql_query("SELECT * FROM kicks", kick_conn)
 df_pose = pd.read_sql_query("SELECT * FROM pose_features", pose_conn)
@@ -39,29 +34,28 @@ df_pose = pd.read_sql_query("SELECT * FROM pose_features", pose_conn)
 kick_conn.close()
 pose_conn.close()
 
-# ---------------------------------------------------------
 # Merge Data
-# ---------------------------------------------------------
 df_merged = df_frames.merge(df_kicks, on='kick_id', how='inner')
 df_merged = df_merged.merge(df_pose, on='frame_id', how='inner')
 
-# ---------------------------------------------------------
-# Pivot so each frame is one row with all landmarks as columns
-# ---------------------------------------------------------
+# Pivot so each frame is one row
 df_wide = df_merged.pivot_table(
     index=['frame_id', 'kick_id', 'kick_direction'],
     columns='landmark_name',
     values=['x','y','z','visibility']
 ).reset_index()
 
+# Flatten columns
 df_wide.columns = ['_'.join(col).strip() if col[1] else col[0] for col in df_wide.columns.values]
+
+# Remove visibility columns
+visibility_cols = [c for c in df_wide.columns if c.startswith('visibility_')]
+df_wide.drop(columns=visibility_cols, inplace=True)
 
 def has_landmark(name, axis='x'):
     return f"{axis}_{name}" in df_wide.columns
 
-# ---------------------------------------------------------
 # Normalization
-# ---------------------------------------------------------
 origin_x_col, origin_y_col = None, None
 
 if has_landmark('mid_hip'):
@@ -98,19 +92,29 @@ if origin_x_col and origin_y_col:
         elif c.startswith('z_'):
             df_wide[c] = df_wide[c] / scale
 
-# ---------------------------------------------------------
-# Compute Example Angles 
-# ---------------------------------------------------------
-if all(has_landmark(l) for l in ['hip_left', 'knee_left', 'ankle_left']):
-    df_wide['angle_knee_left'] = df_wide.apply(lambda row: compute_angle(
-        (row.get('x_hip_left', 0), row.get('y_hip_left', 0)),
-        (row.get('x_knee_left', 0), row.get('y_knee_left', 0)),
-        (row.get('x_ankle_left', 0), row.get('y_ankle_left', 0))
-    ), axis=1)
+# Compute Angles if landmarks exist
+def add_angle_feature(df, joint_center, joint_1, joint_2, angle_name):
+    if (has_landmark(joint_center) and has_landmark(joint_1) and has_landmark(joint_2) and
+        has_landmark(joint_center, 'y') and has_landmark(joint_1, 'y') and has_landmark(joint_2, 'y')):
+        df[angle_name] = df.apply(lambda row: compute_angle(
+            (row[f'x_{joint_1}'], row[f'y_{joint_1}']),
+            (row[f'x_{joint_center}'], row[f'y_{joint_center}']),
+            (row[f'x_{joint_2}'], row[f'y_{joint_2}'])
+        ), axis=1)
 
-# ---------------------------------------------------------
+# Knees
+add_angle_feature(df_wide, 'knee_left', 'hip_left', 'ankle_left', 'angle_knee_left')
+add_angle_feature(df_wide, 'knee_right', 'hip_right', 'ankle_right', 'angle_knee_right')
+
+# Elbows
+add_angle_feature(df_wide, 'elbow_left', 'shoulder_left', 'wrist_left', 'angle_elbow_left')
+add_angle_feature(df_wide, 'elbow_right', 'shoulder_right', 'wrist_right', 'angle_elbow_right')
+
 # Save the single-frame training data
-# ---------------------------------------------------------
-output_path = os.path.join(PROCESSED_DIR, 'training_data_single_frame.csv')
+output_filename = 'training_data_single_frame.csv'
+output_path = os.path.join(PROCESSED_DIR, output_filename)
 df_wide.to_csv(output_path, index=False)
-print(f"Single-frame training data saved to {output_path}")
+
+# Print relative path to output (relative to current working dir)
+rel_path = os.path.relpath(output_path)
+print(f"Single-frame training data saved to {rel_path}")
