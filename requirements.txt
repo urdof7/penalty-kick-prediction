@@ -6,3 +6,4 @@ matplotlib
 joblib
 opencv-python
 mediapipe
+ipywidgets
