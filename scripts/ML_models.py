@@ -1,6 +1,7 @@
 '''
 Description: This program runs multiple classic supervised ML models on a given the transformed dataset. There is one train/test split of the data per iteration which all models utilize;
 every iteration generates a new split. During each cycle, there are metrics being collected for each model individually. When all iterations are completed, such metrics are then averaged and printed.
+Moreover, a plot of the most influential input features based on ANOVA F-test is displayed.
 Dependencies: numpy, pandas, argparse, matplotlib.pyplot, sklearn.model_selection, sklearn.preprocessing, sklearn.feature_selection, sklearn.metrics, 
 sklearn.dummy, sklearn.linear_model, sklearn.svm, sklearn.tree, sklearn.neighbors, sklearn.naive_bayes
 '''
@@ -26,7 +27,6 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
-
 
 def anova_feature_selection_with_graph(X: pd.DataFrame, y: pd.Series, k: int = 10):
     """
@@ -87,7 +87,6 @@ def initialize_features(data: pd.DataFrame) -> tuple[np.ndarray, pd.Series]:
 
     return X_selected, y
 
-
 def aggregate_results(results: pd.DataFrame, models: dict)-> pd.DataFrame:
     '''
     Aggregates the results of each model respectively, thus providing the average of each metric.
@@ -119,7 +118,6 @@ def aggregate_results(results: pd.DataFrame, models: dict)-> pd.DataFrame:
         # Add to aggregated results
         aggregated_results[model_name[0]] = avg_metrics
     return aggregated_results
-
 
 def run_models(data: pd.DataFrame, models: dict, iterations: int = 100) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
@@ -164,10 +162,8 @@ def run_models(data: pd.DataFrame, models: dict, iterations: int = 100) -> tuple
         results.append(iteration_results)
 
     aggregated_results = aggregate_results(results, models)
-    
-    # results_df = pd.DataFrame([{k: v for k, v in res.items() if k != "Confusion Matrix"} for res in results])
-    # results_conf_matrix = pd.DataFrame([{k: v for k, v in res.items() if k in ["Model", "Confusion Matrix"]} for res in results])
 
+    # get results dataframe without confusion matrix per model and results of confusion matrix per model
     results_df = pd.DataFrame([{k: v for k, v in res.items() if k != "Confusion Matrix"} for res in aggregated_results.values()])
     results_conf_matrix = pd.DataFrame([{k: v for k, v in res.items() if k in ["Model", "Confusion Matrix"]} for res in aggregated_results.values()])
 
@@ -213,19 +209,11 @@ def main() -> None:
 
     # run models
     iterations = args.iter if args.iter is not None else 100
-    results_df, results_conf_matrix = run_models(data, models, iterations)
+    results_df, results_conf_matrix = run_models(data, models, iterations) # ignore confusion matrix
 
     # print average results of all models
     print(f"\nModel performance metrics averages, over {iterations} iterations:")
     print(results_df)
-
-    # for index, res in results_conf_matrix.iterrows(): # print confusion matrix for each model
-    #     print(f"\nConfusion Matrix for {res['Model']}:")
-    #     # define class labels
-    #     class_labels = ['Negative (0)', 'Positive (1)']
-    #     # create a DataFrame from the confusion matrix of each model
-    #     cm_df = pd.DataFrame(res['Confusion Matrix'], index=['Actual Negative', 'Actual Positive'], columns=['Predicted Negative', 'Predicted Positive'])
-    #     print(cm_df)
 
     exit(0)
 
