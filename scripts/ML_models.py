@@ -78,13 +78,14 @@ def initialize_features(data: pd.DataFrame) -> tuple[np.ndarray, pd.Series]:
     Returns:
         tuple[np.ndarray, pd.Series]: Feature matrix X and target vector y.
     """
+    # drop all unnecessary input features
     X_init = data.drop(columns=['kick_direction', 'frame_id', 'kick_id'])
+    X_init = X_init.loc[:, ~X_init.columns.str.contains('visibility_')]
     y = data['kick_direction']
 
     # Get selected features and reduced feature matrix
     X_selected, selected_features = anova_feature_selection_with_graph(X_init, y, k=30)
-    print(f"Selected Features for Training: {selected_features}")
-
+    # print(f"Selected Features for Training: {selected_features}")
     return X_selected, y
 
 def aggregate_results(results: pd.DataFrame, models: dict)-> pd.DataFrame:
