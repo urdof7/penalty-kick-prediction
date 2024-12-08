@@ -6,6 +6,7 @@ from sklearn.inspection import permutation_importance
 import shap
 import matplotlib.pyplot as plt
 import joblib
+from sklearn.preprocessing import StandardScaler
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
@@ -24,13 +25,19 @@ features = [c for c in df.columns if c not in non_feature_cols]
 X = df[features]
 y = df[target_col]
 
+# Train/test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+# Apply scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
-train_acc = model.score(X_train, y_train)
-test_acc = model.score(X_test, y_test)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train_scaled, y_train)
+
+train_acc = model.score(X_train_scaled, y_train)
+test_acc = model.score(X_test_scaled, y_test)
 print(f"Train Accuracy: {train_acc:.2f}")
 print(f"Test Accuracy: {test_acc:.2f}")
 
@@ -44,7 +51,7 @@ fi_gini_path = os.path.join(REPORT_DIR, 'feature_importances_gini_single_frame.c
 fi_gini.to_csv(fi_gini_path, index=False)
 print(f"Gini-based feature importances saved to {os.path.relpath(fi_gini_path, BASE_DIR)}")
 
-perm_import = permutation_importance(model, X_test, y_test, n_repeats=10, random_state=42)
+perm_import = permutation_importance(model, X_test_scaled, y_test, n_repeats=10, random_state=42)
 fi_perm = pd.DataFrame({
     'feature': X.columns,
     'importance_mean': perm_import.importances_mean,
@@ -56,10 +63,10 @@ fi_perm.to_csv(fi_perm_path, index=False)
 print(f"Permutation feature importances saved to {os.path.relpath(fi_perm_path, BASE_DIR)}")
 
 explainer = shap.TreeExplainer(model)
-shap_values = explainer.shap_values(X_test)
+shap_values = explainer.shap_values(X_test_scaled)
 
 plt.figure(figsize=(10,6))
-shap.summary_plot(shap_values, X_test, show=False)
+shap.summary_plot(shap_values, X_test_scaled, feature_names=X.columns, show=False)
 shap_plot_path = os.path.join(REPORT_DIR, 'shap_summary_plot_single_frame.png')
 plt.savefig(shap_plot_path, bbox_inches='tight')
 plt.close()
