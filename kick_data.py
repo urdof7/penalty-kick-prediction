@@ -1,3 +1,7 @@
+'''
+Descrption: This program inserts new data, which is manually hard coded here, into the kick_data.db.
+'''
+
 # Directions:
 # 1 - Top left
 # 2 - Middle top
@@ -6,8 +10,11 @@
 # 5 - Middle bottom
 # 6 - Bottom right
 
-kick_data = [
-    {
+# NOTE: for this program, manually write the following information: video_name, timestamp, direction (quadrant in which the ball is scored); 
+# every other attributes can be null.
+
+kick_data = [ # video_name, timestamp, direction attributes are required; the rest are not
+    { # each entry is a kick
         "video_name": "Argentina v France： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup Final [MCWJNOfJoSM].mp4",
         "timestamp": "00:28",
         "direction": 1,

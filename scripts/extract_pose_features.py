@@ -1,3 +1,8 @@
+'''
+Description: This program runs the process of extracting pose features from the kick_data.db and insert them into the pose_data.db appropriately, 
+and is preliminary to the pose_prediction_conversion.py. Note: make sure to run program only when you are in the "./penalty-kick-prediction" directory; run this program after running extract_frames.py.
+'''
+
 import os
 import cv2
 import mediapipe as mp
