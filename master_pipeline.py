@@ -19,11 +19,19 @@ def run_script(script_path):
     """Run a single script using subprocess."""
     try:
         print(f"Running: {script_path}")
-        result = subprocess.run([sys.executable, script_path], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            [sys.executable, script_path],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
         print(f"Output:\n{result.stdout}")
+        print(f"Errors:\n{result.stderr}")
     except subprocess.CalledProcessError as e:
-        print(f"Error running {script_path}: {e.stderr}")
+        print(f"Error running {script_path}:\n{e.stderr}")
+        print(f"Standard output before error:\n{e.stdout}")
         raise
+
 
 def main():
     """Run the pipeline scripts."""
@@ -45,3 +53,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
