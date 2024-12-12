@@ -1161,15 +1161,623 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
 
    #next video 
 
-#    {
-#        "video_name": "converted_Germany v Argentina： Full Penalty Shoot-out ｜ 2006 FIFA World Cup [AU9yfAXU09k].mp4",
-#        "timestamp": "02:38.15",
-#        "direction": 6,
-#        "player_name": None,
-#        "player_team": None,
-#        "goal_scored": False,
-#        "num_frames": 10
-#    },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "00:26.25",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "00:43.28",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "01:01.08",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "01:19.00",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "01:46.05",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "02:05.07",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "00:26.25",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "02:25.10",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "02:44.17",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "02:57.26",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "03:20.26",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "04:10.05",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "04:36.07",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "04:58.17",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "05:29.27",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "05:58.04",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "06:20.25",
+       "direction": 5,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "06:44.15",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "07:43.23",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Heartbreaking Penalty Shootout [JemJhQYrVRA].mp4",
+       "timestamp": "08:01.27",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+
+    #next video
+
+   {
+       "video_name": "converted_Legendary Penalty Kicks [53mNwhNE80Q].mp4",
+       "timestamp": "02:06.02",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Legendary Penalty Kicks [53mNwhNE80Q].mp4",
+       "timestamp": "03:13.13",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Legendary Penalty Kicks [53mNwhNE80Q].mp4",
+       "timestamp": "04:43.00",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Legendary Penalty Kicks [53mNwhNE80Q].mp4",
+       "timestamp": "05:50.04",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+
+    #next video
+
+   {
+       "video_name": "converted_Netherlands v Costa Rica： Full Penalty Shoot-out ｜ 2014 #FIFAWorldCup Quarter-Finals [VLhgWCI96q8].mp4",
+       "timestamp": "01:46.10",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Netherlands v Costa Rica： Full Penalty Shoot-out ｜ 2014 #FIFAWorldCup Quarter-Finals [VLhgWCI96q8].mp4",
+       "timestamp": "03:09.06",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Netherlands v Costa Rica： Full Penalty Shoot-out ｜ 2014 #FIFAWorldCup Quarter-Finals [VLhgWCI96q8].mp4",
+       "timestamp": "04:04.13",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Netherlands v Costa Rica： Full Penalty Shoot-out ｜ 2014 #FIFAWorldCup Quarter-Finals [VLhgWCI96q8].mp4",
+       "timestamp": "05:38.03",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Netherlands v Costa Rica： Full Penalty Shoot-out ｜ 2014 #FIFAWorldCup Quarter-Finals [VLhgWCI96q8].mp4",
+       "timestamp": "06:06.05",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+
+    #next video
+
+   {
+       "video_name": "converted_Paraguay v Japan： Full Penalty Shoot-out ｜ 2010 #FIFAWorldCup Round of 16 [Mger-g-Swbo].mp4",
+       "timestamp": "01:04.21",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Paraguay v Japan： Full Penalty Shoot-out ｜ 2010 #FIFAWorldCup Round of 16 [Mger-g-Swbo].mp4",
+       "timestamp": "01:45.11",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Paraguay v Japan： Full Penalty Shoot-out ｜ 2010 #FIFAWorldCup Round of 16 [Mger-g-Swbo].mp4",
+       "timestamp": "03:16.11",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Paraguay v Japan： Full Penalty Shoot-out ｜ 2010 #FIFAWorldCup Round of 16 [Mger-g-Swbo].mp4",
+       "timestamp": "04:45.11",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Paraguay v Japan： Full Penalty Shoot-out ｜ 2010 #FIFAWorldCup Round of 16 [Mger-g-Swbo].mp4",
+       "timestamp": "05:20.02",
+       "direction": 5,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+
+   #next video
+
+   {
+       "video_name": "converted_Portugal vs. Slovenia： Full Penalty Shootout ｜ UEFA Euro 2024 [O3lbfO8RFGk].mp4",
+       "timestamp": "00:06.36",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Portugal vs. Slovenia： Full Penalty Shootout ｜ UEFA Euro 2024 [O3lbfO8RFGk].mp4",
+       "timestamp": "00:56.21",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Portugal vs. Slovenia： Full Penalty Shootout ｜ UEFA Euro 2024 [O3lbfO8RFGk].mp4",
+       "timestamp": "02:44.19",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Portugal vs. Slovenia： Full Penalty Shootout ｜ UEFA Euro 2024 [O3lbfO8RFGk].mp4",
+       "timestamp": "03:19.45",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Portugal vs. Slovenia： Full Penalty Shootout ｜ UEFA Euro 2024 [O3lbfO8RFGk].mp4",
+       "timestamp": "04:11.40",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+
+   # next video
+
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "01:53.02",
+       "direction": 5,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "02:14.26",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "07:45.09",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "08:34.17",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "08:56.16",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "09:15.13",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "09:30.02",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "09:41.08",
+       "direction": 5,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "09:57.14",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "10:33.10",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "10:43.01",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "10:58.07",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "11:15.12",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "11:29.19",
+       "direction": 5,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Unforgettable Penalty Shootout [4ec4RXpo4Po].mp4",
+       "timestamp": "12:01.14",
+       "direction": 1,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+
+   #next video
+
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "00:25.06",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "01:12.00",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "01:53.21",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "02:34.11",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "03:20.11",
+       "direction": 2,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "04:32.17",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "05:24.27",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "06:18.11",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "07:20.20",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "08:14.27",
+       "direction": 3,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "08:58.18",
+       "direction": 6,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": False,
+       "num_frames": 10
+   },
+   {
+       "video_name": "converted_Venezuela vs. Canada： Entire Penalty Shootout in Quarterfinal Matchup ｜ 2024 Copa América [R4sKGftZWck].mp4",
+       "timestamp": "09:53.27",
+       "direction": 4,
+       "player_name": None,
+       "player_team": None,
+       "goal_scored": True,
+       "num_frames": 10
+   },
+
+   ## FIN
+
+
+   
 
 
 
