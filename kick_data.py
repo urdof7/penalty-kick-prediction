@@ -3,6 +3,7 @@ Descrption: This program inserts new data, which is manually hard coded here, in
 '''
 
 
+
 # Directions:
 # 1 - Top left
 # 2 - Middle top
@@ -12,8 +13,11 @@ Descrption: This program inserts new data, which is manually hard coded here, in
 # 6 - Bottom right
 
 
+
+# NOTE: for this program, manually write the following information: video_name, timestamp, direction (quadrant in which the ball is scored);
 # NOTE: for this program, manually write the following information: video_name, timestamp, direction (quadrant in which the ball is scored);
 # every other attributes can be null.
+
 
 
 kick_data = [ # video_name, timestamp, direction attributes are required; the rest are not
@@ -84,6 +88,8 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
 
  #next video
 
+ #next video
+
 
  {
  "video_name": "Brazil v Croatia： Full Penalty Shoot-out ｜ 2022 #FIFAWorldCup [uR9vgLLDhE0].mp4",
@@ -149,6 +155,8 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
 
+
+ #next video
 
  #next video
 
@@ -236,6 +244,8 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
 
+
+ #next video
 
  #next video
 

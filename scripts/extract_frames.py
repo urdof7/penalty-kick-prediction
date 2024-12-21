@@ -2,6 +2,7 @@ import os
 import sys
 import sqlite3
 import subprocess
+import logging
 import json
 import tempfile
 import shutil
@@ -37,17 +38,17 @@ cursor.execute("""
 """)
 
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS kicks (
-        kick_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        video_id INTEGER,
-        timestamp TEXT,
-        kick_direction INTEGER,
-        player_name TEXT,
-        player_team TEXT,
-        goal_scored BOOLEAN,
-        FOREIGN KEY (video_id) REFERENCES videos(video_id),
-        UNIQUE (video_id, timestamp)
-    )
+   CREATE TABLE IF NOT EXISTS kicks (
+       kick_id INTEGER PRIMARY KEY AUTOINCREMENT,
+       video_id INTEGER,
+       timestamp TEXT,
+       kick_direction INTEGER,
+       player_name TEXT,
+       player_team TEXT,
+       goal_scored BOOLEAN,
+       FOREIGN KEY (video_id) REFERENCES videos(video_id),
+       UNIQUE (video_id, timestamp)
+   )
 """)
 
 cursor.execute("""
