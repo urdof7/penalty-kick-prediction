@@ -5,9 +5,6 @@ Batches frames by video, processes frames in parallel (one thread per frame),
 downloads from Hugging Face, runs Mediapipe Pose, and commits annotated frames 
 in a single commit per video using huggingface_hub's create_commit, 
 storing pose features in pose_data.db.
-
-No local Git clone is used, avoiding slow clones. Minimal local storage 
-is preserved by removing files after committing.
 """
 
 import os
@@ -105,7 +102,7 @@ def batch_process_video(video_id, frames_list):
     temp_dir_annot = tempfile.mkdtemp(prefix=f"video_{video_id}_ann_")
 
     results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=21) as executor:
         future_to_frame = {
             executor.submit(process_single_frame, f, temp_dir_frames, temp_dir_annot): f
             for f in frames_list
