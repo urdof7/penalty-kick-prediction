@@ -1,141 +1,175 @@
-'''
-Description: This program runs the process of extracting pose features from the kick_data.db and insert them into the pose_data.db appropriately, 
-and is preliminary to the pose_prediction_conversion.py. Note: make sure to run program only when you are in the "./penalty-kick-prediction" directory; run this program after running extract_frames.py.
-'''
+"""
+extract_pose_features.py
+
+Batches frames by video, processes frames in parallel (one thread per frame),
+downloads from Hugging Face, runs Mediapipe Pose, and commits annotated frames 
+in a single commit per video using huggingface_hub's create_commit, 
+storing pose features in pose_data.db.
+"""
 
 import os
+import sys
 import cv2
 import mediapipe as mp
 import sqlite3
 import logging
-from pose_data_setup import insert_pose_feature, get_pose_data_connection, initialize_pose_data
+import tempfile
+import shutil
+import requests
+import concurrent.futures
 
-# Set up logging
+from collections import defaultdict
+from huggingface_hub import HfApi, hf_hub_url, CommitOperationAdd
+from pose_data_setup import initialize_pose_data, insert_pose_feature
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Initialize Mediapipe Pose
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+KICK_DB_PATH = os.path.join(PROJECT_ROOT, 'data', 'kick_data.db')
+
+VIDEO_REPO_ID = "urdof7/penalty-kick-data"
+FRAMES_FOLDER = "frames"               # frames on HF
+ANNOTATED_FRAMES_FOLDER = "annotated-frames"
+api = HfApi()
+
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 mp_drawing = mp.solutions.drawing_utils
 
-# Define the path to frames and database
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-FRAMES_PATH = os.path.join(PROJECT_ROOT, 'data', 'frames')
-ANNOTATED_FRAMES_PATH = os.path.join(PROJECT_ROOT, 'data', 'annotated_frames')
-KICK_DB_PATH = os.path.join(PROJECT_ROOT, 'data', 'kick_data.db')
-
-# Ensure the frames and annotated frames directories exist
-os.makedirs(FRAMES_PATH, exist_ok=True)
-os.makedirs(ANNOTATED_FRAMES_PATH, exist_ok=True)
-
 def get_kick_data_connection():
-    """
-    Connects to the kick_data.db database and returns the connection.
-    """
     return sqlite3.connect(KICK_DB_PATH)
 
-def extract_pose_features_from_frame(frame_path, frame_id, conn):
-    """
-    Extracts pose features from a given frame using Mediapipe and inserts them into the database.
-    :param frame_path: Path to the frame image
-    :param frame_id: ID of the frame
-    :param conn: Database connection to reuse
-    """
-    # List of relevant landmarks for kicking (lower body and torso)
-    relevant_landmarks = [
-        mp_pose.PoseLandmark.LEFT_HIP,
-        mp_pose.PoseLandmark.RIGHT_HIP,
-        mp_pose.PoseLandmark.LEFT_KNEE,
-        mp_pose.PoseLandmark.RIGHT_KNEE,
-        mp_pose.PoseLandmark.LEFT_ANKLE,
-        mp_pose.PoseLandmark.RIGHT_ANKLE,
-        mp_pose.PoseLandmark.LEFT_FOOT_INDEX,
-        mp_pose.PoseLandmark.RIGHT_FOOT_INDEX,
-        mp_pose.PoseLandmark.LEFT_SHOULDER,
-        mp_pose.PoseLandmark.RIGHT_SHOULDER,
-        mp_pose.PoseLandmark.LEFT_ELBOW,
-        mp_pose.PoseLandmark.RIGHT_ELBOW,
-        mp_pose.PoseLandmark.LEFT_WRIST,
-        mp_pose.PoseLandmark.RIGHT_WRIST
+def download_frame_from_hf(hf_filename, local_path):
+    url = hf_hub_url(repo_id=VIDEO_REPO_ID, filename=hf_filename, repo_type="dataset", revision="main")
+    r = requests.get(url, stream=True)
+    if r.status_code == 200:
+        with open(local_path, "wb") as f:
+            shutil.copyfileobj(r.raw, f)
+        return True
+    logging.warning(f"Download failed (status={r.status_code}): {url}")
+    return False
+
+def process_frame_mediapipe(local_frame, local_annotated, frame_id):
+    landmarks = [
+        mp_pose.PoseLandmark.LEFT_HIP, mp_pose.PoseLandmark.RIGHT_HIP,
+        mp_pose.PoseLandmark.LEFT_KNEE, mp_pose.PoseLandmark.RIGHT_KNEE,
+        mp_pose.PoseLandmark.LEFT_ANKLE, mp_pose.PoseLandmark.RIGHT_ANKLE,
+        mp_pose.PoseLandmark.LEFT_FOOT_INDEX, mp_pose.PoseLandmark.RIGHT_FOOT_INDEX,
+        mp_pose.PoseLandmark.LEFT_SHOULDER, mp_pose.PoseLandmark.RIGHT_SHOULDER,
+        mp_pose.PoseLandmark.LEFT_ELBOW, mp_pose.PoseLandmark.RIGHT_ELBOW,
+        mp_pose.PoseLandmark.LEFT_WRIST, mp_pose.PoseLandmark.RIGHT_WRIST
     ]
+    img = cv2.imread(local_frame)
+    if img is None:
+        logging.error(f"Unable to read frame_id={frame_id} at {local_frame}")
+        return False
 
-    # Read the frame image
-    image = cv2.imread(frame_path)
-    if image is None:
-        logging.error(f"Error reading frame: {frame_path}. The frame does not exist or cannot be accessed.")
-        return
-
-    # Convert BGR image to RGB
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Process the frame with Mediapipe Pose
-    results = pose.process(image_rgb)
-
-    # Check if pose landmarks were detected
+    rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    results = pose.process(rgb)
     if results.pose_landmarks:
-        # Draw landmarks on the image
-        annotated_image = image.copy()
-        mp_drawing.draw_landmarks(annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-
-        # Save the annotated image
-        annotated_image_path = os.path.join(ANNOTATED_FRAMES_PATH, os.path.basename(frame_path).replace('.png', '_annotated.png'))
-        cv2.imwrite(annotated_image_path, annotated_image)
-
-        # Iterate over the detected landmarks and insert pose features into the database
-        for landmark_enum in relevant_landmarks:
-            idx = landmark_enum.value
-            landmark = results.pose_landmarks.landmark[idx]
-            landmark_name = landmark_enum.name
-            logging.debug(f"Inserting landmark {landmark_name} with frame_id={frame_id}")
-            try:
-                insert_pose_feature(
-                    frame_id=frame_id,
-                    landmark_name=landmark_name,
-                    x=landmark.x,
-                    y=landmark.y,
-                    z=landmark.z,
-                    visibility=landmark.visibility
-                )
-            except sqlite3.Error as e:
-                logging.error(f"Error inserting pose feature for landmark {landmark_name}: {e}")
-        logging.info(f"Pose features extracted and saved for frame: {frame_path}")
+        ann_img = img.copy()
+        mp_drawing.draw_landmarks(ann_img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        cv2.imwrite(local_annotated, ann_img)
+        for lm_enum in landmarks:
+            idx = lm_enum.value
+            lm = results.pose_landmarks.landmark[idx]
+            insert_pose_feature(frame_id, lm_enum.name, lm.x, lm.y, lm.z, lm.visibility)
+        return True
     else:
-        logging.warning(f"No pose landmarks detected for frame: {frame_path}. Analysis cannot proceed without landmarks.")
+        logging.warning(f"No landmarks for frame_id={frame_id}")
+        return True
+
+def process_single_frame(frame_info, frames_dir, annotated_dir):
+    """
+    Downloads + processes a single frame in a separate thread.
+    Returns (success, annotated_filename) for use in commits.
+    """
+    frame_id, frame_no, hf_path = frame_info
+    local_frame = os.path.join(frames_dir, f"frame_{frame_id}.png")
+    if not download_frame_from_hf(hf_path, local_frame):
+        return (False, None)
+    ann_name = os.path.basename(hf_path).replace(".png", "_annotated.png")
+    local_annotated = os.path.join(annotated_dir, ann_name)
+    ok = process_frame_mediapipe(local_frame, local_annotated, frame_id)
+    return (ok, ann_name if ok else None)
+
+def batch_process_video(video_id, frames_list):
+    """
+    Processes frames for one video concurrently. 
+    After all frames are annotated, creates a single commit with create_commit.
+    """
+    temp_dir_frames = tempfile.mkdtemp(prefix=f"video_{video_id}_frames_")
+    temp_dir_annot = tempfile.mkdtemp(prefix=f"video_{video_id}_ann_")
+
+    results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=21) as executor:
+        future_to_frame = {
+            executor.submit(process_single_frame, f, temp_dir_frames, temp_dir_annot): f
+            for f in frames_list
+        }
+        for future in concurrent.futures.as_completed(future_to_frame):
+            ok, ann_name = future.result()
+            results.append((ok, ann_name))
+
+    # Build create_commit operations
+    ops = []
+    for (ok, ann_name) in results:
+        if ok and ann_name is not None:
+            local_annot_path = os.path.join(temp_dir_annot, ann_name)
+            if os.path.exists(local_annot_path):
+                # Prepare add_or_update for huggingface_hub
+                from huggingface_hub import CommitOperationAdd
+                path_in_repo = f"{ANNOTATED_FRAMES_FOLDER}/{ann_name}"
+                ops.append(
+                    CommitOperationAdd(
+                        path_in_repo=path_in_repo,
+                        path_or_fileobj=local_annot_path
+                    )
+                )
+
+    if ops:
+        msg = f"Add annotated frames for video_id={video_id}"
+        try:
+            commit_info = api.create_commit(
+                repo_id=VIDEO_REPO_ID,
+                repo_type="dataset",
+                operations=ops,
+                commit_message=msg
+            )
+            if not commit_info or not getattr(commit_info, 'commit_id', None):
+                logging.info(f"No changes for video_id={video_id} (commit empty).")
+            else:
+                logging.info(f"Committed {len(ops)} annotated frames for video_id={video_id} in one commit.")
+        except Exception as e:
+            logging.error(f"Commit failed for video_id={video_id}: {e}")
+    else:
+        logging.info(f"No annotated frames to commit for video_id={video_id}.")
+
+    shutil.rmtree(temp_dir_frames)
+    shutil.rmtree(temp_dir_annot)
 
 def extract_frames_from_kick_data():
-    """
-    Extracts frames from the kick_data database and processes them using Mediapipe.
-    Only frames that exist in the kick_data database are processed to ensure consistency.
-    """
-    # Initialize pose_data database to clear previous data
+    from pose_data_setup import initialize_pose_data
     initialize_pose_data()
 
-    # Open kick_data database connection
-    kick_conn = get_kick_data_connection()
-    kick_cursor = kick_conn.cursor()
+    conn = sqlite3.connect(KICK_DB_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT video_id, frame_id, frame_no, frame_path FROM frames")
+    rows = cur.fetchall()
+    conn.close()
 
-    # Query all frames from kick_data.db
-    kick_cursor.execute("SELECT frame_id, frame_no, frame_path FROM frames")
-    frames = kick_cursor.fetchall()
+    frames_by_video = defaultdict(list)
+    for (vid, fid, fno, fpath) in rows:
+        # fpath example: "frames/VID_1_KICK_2_FRAME_001.png"
+        frames_by_video[vid].append((fid, fno, fpath))
 
-    for frame in frames:
-        frame_id, frame_no, frame_path = frame
-        # Construct the full path relative to the project root
-        full_frame_path = os.path.join(PROJECT_ROOT, frame_path)
-        if os.path.exists(full_frame_path):
-            pose_conn = get_pose_data_connection()
-            extract_pose_features_from_frame(full_frame_path, frame_id, pose_conn)
-            pose_conn.close()
-        else:
-            logging.warning(f"Frame path does not exist: {full_frame_path}")
+    for video_id, frames_list in frames_by_video.items():
+        logging.info(f"Processing video_id={video_id} with {len(frames_list)} frames.")
+        batch_process_video(video_id, frames_list)
 
-    # Close connections
-    kick_conn.close()
-
-# Example usage
-if __name__ == "__main__":
-    # Extract pose features for frames listed in the kick_data database
+def main():
     extract_frames_from_kick_data()
+    pose.close()
 
-# Release resources
-pose.close()
+if __name__ == "__main__":
+    main()
