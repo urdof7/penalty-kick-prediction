@@ -4,10 +4,9 @@ import sys
 
 # Paths to the scripts
 default_scripts = [
-    "kick_data.py",
     "scripts/extract_frames.py",
-    "scripts/extract_pose_features.py",
     "scripts/pose_data_setup.py",
+    "scripts/extract_pose_features.py",
 ]
 
 optional_scripts = [
