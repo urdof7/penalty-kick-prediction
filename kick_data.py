@@ -1367,6 +1367,9 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
 
+
+
+
  #next video
 
 #  {
@@ -1663,5 +1666,47 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
 #  "goal_scored": True,
 #  "num_frames": 10
 #  }
+
+{
+ "video_name": "brayden_kicks.mp4",
+ "timestamp": "00:46.30",
+ "direction": 2,
+ "player_name": None,
+ "player_team": None,
+ "goal_scored": True,
+ "num_frames": 10
+ },
+
+ {
+ "video_name": "brayden_kicks.mp4",
+ "timestamp": "01:00.03",
+ "direction": 6,
+ "player_name": None,
+ "player_team": None,
+ "goal_scored": True,
+ "num_frames": 10
+ },
+
+{
+ "video_name": "brayden_kicks.mp4",
+ "timestamp": "01:19.18",
+ "direction": 4,
+ "player_name": None,
+ "player_team": None,
+ "goal_scored": True,
+ "num_frames": 10
+ },
+
+   {
+ "video_name": "brayden_kicks.mp4",
+ "timestamp": "01:29.24",
+ "direction": 6,
+ "player_name": None,
+ "player_team": None,
+ "goal_scored": True,
+ "num_frames": 10
+ },
+
+
 ]
 #  ## END
