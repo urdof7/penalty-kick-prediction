@@ -8,7 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, LSTM, Dense, Dropout
 import joblib
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # development_and_training base directory
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 SEQUENCE_FILE = os.path.join(DATA_DIR, 'processed', 'sequence', 'training_data_sequence.npz')
 

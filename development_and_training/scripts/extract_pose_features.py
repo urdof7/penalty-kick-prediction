@@ -28,7 +28,7 @@ from pose_data_setup import initialize_pose_data, insert_pose_feature
 # Configuration / Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # Backend base driectory
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # development_and_training base driectory
 KICK_DB_PATH = os.path.join(BASE_DIR, 'data', 'kick_data.db')
 
 VIDEO_REPO_ID = "PK-Prediction/pk_data"

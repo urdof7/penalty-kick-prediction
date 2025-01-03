@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 # Define the project root and database path
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # Backend base directory
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # development_and_training base directory
 POSE_DB_PATH = os.path.join(BASE_DIR, 'data', 'pose_data.db')
 
 # Ensure the data directory exists

@@ -9,7 +9,7 @@ import shutil
 from collections import defaultdict
 from huggingface_hub import HfApi, hf_hub_url, CommitOperationAdd
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # Backend base directory
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # development_and_training base directory
 sys.path.append(BASE_DIR)
 
 from kick_data import kick_data  # Your kick_data

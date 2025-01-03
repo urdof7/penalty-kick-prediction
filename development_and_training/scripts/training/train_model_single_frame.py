@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import joblib
 from sklearn.preprocessing import StandardScaler
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # development_and_training base directory
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 PROCESSED_SINGLE_FRAME = os.path.join(DATA_DIR, 'processed', 'single_frame', 'training_data_single_frame.csv')
 REPORT_DIR = os.path.join(BASE_DIR, 'report', 'single_frame')

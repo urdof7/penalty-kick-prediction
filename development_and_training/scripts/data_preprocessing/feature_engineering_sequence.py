@@ -14,7 +14,7 @@ def compute_angle(p1, p2, p3):
     angle = degrees(atan2(v2[1], v2[0]) - atan2(v1[1], v1[0]))
     return angle + 360 if angle < 0 else angle
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Backend base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # development_and_training base directory
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 SEQUENCE_DIR = os.path.join(DATA_DIR, 'processed', 'sequence')
 kick_db_path = os.path.join(DATA_DIR, 'kick_data.db')

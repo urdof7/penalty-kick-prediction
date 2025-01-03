@@ -1,5 +1,7 @@
 __pycache__/
 venv/
+venv_devtrain/
+venv_web/
 .DS_Store
 .DS_Store?
 notebook_temp_viewer/
