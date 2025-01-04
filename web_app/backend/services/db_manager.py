@@ -1,75 +1,102 @@
 # web_app/backend/services/db_manager.py
 
+import os
+import sqlite3
 from database.db_setup import get_connection
 
 def clear_session_data(session_id):
     """
-    Removes all videos under this session_id (and associated kicks, frames, pose_features).
-    Returns (video_files, frame_files) so the caller can remove them from disk if desired.
+    Removes all videos + frames + pose_features under this session_id.
+    Returns (video_files, frame_files, annotated_frame_files)
+      so caller can remove them from disk.
     """
     conn = get_connection()
     cur = conn.cursor()
 
-    # 1) Collect all video_ids + their filenames for this session
+    # 1) Find all videos for this session
     cur.execute("SELECT video_id, original_name FROM videos WHERE session_id=?", (session_id,))
     video_rows = cur.fetchall()
-    video_ids = [r[0] for r in video_rows]
-    video_files = [r[1] for r in video_rows]  # the actual filenames on disk
-
-    if not video_ids:
-        # Nothing to clear
+    if not video_rows:
         conn.close()
-        return ([], [])
+        return ([], [], [])
 
-    # Make a tuple or list for WHERE ... IN usage
-    video_ids_tuple = tuple(video_ids)
-    placeholders = ",".join(["?"] * len(video_ids))
+    video_ids = [row[0] for row in video_rows]
+    video_names = [row[1] for row in video_rows]
 
-    # 2) Collect frame filenames so we can remove them from disk
-    frame_files = []
-    if len(video_ids) == 1:
-        # single video -> can do simpler queries
-        cur.execute("SELECT frame_path FROM frames WHERE video_id=?", video_ids_tuple)
-    else:
-        cur.execute(f"SELECT frame_path FROM frames WHERE video_id IN ({placeholders})", video_ids)
-    rows = cur.fetchall()
-    frame_files = [row[0] for row in rows if row[0] is not None]
+    # Gather all frames for these videos
+    placeholders = ",".join(["?"]*len(video_ids))
+    cur.execute(f"SELECT frame_id, frame_path FROM frames WHERE video_id IN ({placeholders})", video_ids)
+    frame_rows = cur.fetchall()
+    frame_files = [r[1] for r in frame_rows]
 
-    # 3) Delete pose_features for these frames
-    #    First find all frame_ids
-    if len(video_ids) == 1:
-        cur.execute("SELECT frame_id FROM frames WHERE video_id=?", video_ids_tuple)
-    else:
-        cur.execute(f"SELECT frame_id FROM frames WHERE video_id IN ({placeholders})", video_ids)
-    frame_ids = [r[0] for r in cur.fetchall()]
-
+    # Pose features: we can just remove them by frame_id
+    frame_ids = [r[0] for r in frame_rows]
     if frame_ids:
-        if len(frame_ids) == 1:
-            cur.execute("DELETE FROM pose_features WHERE frame_id=?", (frame_ids[0],))
-        else:
-            frame_placeholders = ",".join(["?"] * len(frame_ids))
-            cur.execute(f"DELETE FROM pose_features WHERE frame_id IN ({frame_placeholders})", frame_ids)
+        frame_placeholders = ",".join(["?"]*len(frame_ids))
+        cur.execute(f"DELETE FROM pose_features WHERE frame_id IN ({frame_placeholders})", frame_ids)
 
-    # 4) Delete frames + kicks + videos
-    if len(video_ids) == 1:
-        cur.execute("DELETE FROM frames WHERE video_id=?", video_ids_tuple)
-        cur.execute("DELETE FROM kicks WHERE video_id=?", video_ids_tuple)
-        cur.execute("DELETE FROM videos WHERE video_id=?", video_ids_tuple)
-    else:
-        cur.execute(f"DELETE FROM frames WHERE video_id IN ({placeholders})", video_ids)
-        cur.execute(f"DELETE FROM kicks WHERE video_id IN ({placeholders})", video_ids)
-        cur.execute(f"DELETE FROM videos WHERE video_id IN ({placeholders})", video_ids)
+    # Delete frames
+    cur.execute(f"DELETE FROM frames WHERE video_id IN ({placeholders})", video_ids)
+
+    # Delete kicks
+    cur.execute(f"DELETE FROM kicks WHERE video_id IN ({placeholders})", video_ids)
+
+    # Finally delete videos
+    cur.execute(f"DELETE FROM videos WHERE video_id IN ({placeholders})", video_ids)
 
     conn.commit()
     conn.close()
 
-    return (video_files, frame_files)
+    # For annotated frames, we typically name them with session_id + frame_path,
+    # so we can guess them. Let's build them all:
+    annotated_frame_files = []
+    for ff in frame_files:
+        # The annotated name might be session_id + "_" + ff
+        # e.g. sessionID_frame_001.png
+        annotated_frame_files.append(f"{session_id}_{ff}")
+
+    return (video_names, frame_files, annotated_frame_files)
+
+def clear_frames_for_video(session_id, video_id):
+    """
+    Clears frames + pose_features for a specific video in this session, 
+    so we can re-extract them. Returns (frame_files, annotated_frame_files).
+    (We do NOT remove the video row.)
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # 1) Gather frames for that video
+    cur.execute("SELECT frame_id, frame_path FROM frames WHERE video_id=?", (video_id,))
+    frame_rows = cur.fetchall()
+    if not frame_rows:
+        conn.close()
+        return ([], [])
+
+    frame_ids = [r[0] for r in frame_rows]
+    frame_files = [r[1] for r in frame_rows]
+
+    # 2) Delete pose_features for these frames
+    placeholders = ",".join(["?"]*len(frame_ids))
+    cur.execute(f"DELETE FROM pose_features WHERE frame_id IN ({placeholders})", frame_ids)
+
+    # 3) Delete frames
+    cur.execute("DELETE FROM frames WHERE video_id=?", (video_id,))
+
+    # 4) Delete any kicks referencing these frames 
+    #    (Optional if you only store 1 kick per video. 
+    #     If you want to keep the 'kicks' row, remove this.)
+    # cur.execute("DELETE FROM kicks WHERE video_id=?", (video_id,))
+
+    conn.commit()
+    conn.close()
+
+    # Build annotated names (sessionID_frame_001.png => sessionID_frame_001.png)
+    # If your naming convention is "sessionID_<originalFrame>", we do:
+    annotated_frame_files = [f"{session_id}_{ff}" for ff in frame_files]
+    return (frame_files, annotated_frame_files)
 
 def insert_video(session_id, original_name):
-    """
-    Insert a row into 'videos' with session_id + original_name.
-    Return the video_id.
-    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
@@ -82,10 +109,6 @@ def insert_video(session_id, original_name):
     return vid
 
 def get_video_by_name(session_id, filename):
-    """
-    Return (video_id, original_name) for a video matching
-    session_id + filename, or None if not found.
-    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
@@ -99,10 +122,6 @@ def get_video_by_name(session_id, filename):
     return row
 
 def insert_kick(video_id, timestamp):
-    """
-    Insert a row in 'kicks' with video_id + timestamp.
-    Return the kick_id.
-    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
@@ -115,9 +134,6 @@ def insert_kick(video_id, timestamp):
     return kid
 
 def insert_frame(kick_id, video_id, frame_no, frame_path):
-    """
-    Insert a row in 'frames' referencing the kick + video.
-    """
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
@@ -128,3 +144,13 @@ def insert_frame(kick_id, video_id, frame_no, frame_path):
     conn.commit()
     conn.close()
     return fid
+
+def insert_pose_feature(frame_id, landmark_name, x, y, z, visibility):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO pose_features (frame_id, landmark_name, x, y, z, visibility)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (frame_id, landmark_name, x, y, z, visibility))
+    conn.commit()
+    conn.close()

@@ -1,23 +1,23 @@
 // web_app/frontend/src/App.js
-
 import React, { useState, useRef } from 'react';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadedFilename, setUploadedFilename] = useState('');
   const [frameURLs, setFrameURLs] = useState([]);
+  const [annotatedURLs, setAnnotatedURLs] = useState([]); // <-- NEW
   const [statusMessage, setStatusMessage] = useState('');
   const [videoURL, setVideoURL] = useState('');
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
 
   const videoRef = useRef(null);
 
-  // -------- Handle file selection
+  // 1) Choose a file
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
-  // -------- Upload the file to /api/upload
+  // 2) Upload
   const handleUpload = async () => {
     if (!selectedFile) {
       alert('No file selected!');
@@ -35,16 +35,15 @@ function App() {
         credentials: 'include'
       });
       if (!res.ok) throw new Error('Upload failed');
-
-      // Parse response
       const data = await res.json();
       setUploadedFilename(data.filename);
 
-      // Clear out old frames from UI
+      // Clear old frames & annotated
       setFrameURLs([]);
+      setAnnotatedURLs([]);
       setCurrentFrameIndex(0);
 
-      // Create a local object URL for the new video
+      // Local URL for preview
       const localVideoURL = URL.createObjectURL(selectedFile);
       setVideoURL(localVideoURL);
 
@@ -54,10 +53,10 @@ function App() {
     }
   };
 
-  // -------- Extract frames at current video time
+  // 3) Extract frames at currentTime
   const handleExtractFrames = async () => {
     if (!uploadedFilename) {
-      alert('No uploaded file reference. Please upload first.');
+      alert('No uploaded file reference.');
       return;
     }
     if (!videoRef.current) {
@@ -66,13 +65,10 @@ function App() {
     }
 
     const currentTime = videoRef.current.currentTime;
-    setStatusMessage(`Extracting frames at time: ${currentTime.toFixed(2)}s...`);
+    setStatusMessage(`Extracting frames at ${currentTime.toFixed(2)}s...`);
 
     try {
-      const body = {
-        filename: uploadedFilename, // matches DB
-        timestamp: currentTime
-      };
+      const body = { filename: uploadedFilename, timestamp: currentTime };
       const res = await fetch('http://localhost:8098/api/extract_frames', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,47 +76,67 @@ function App() {
         credentials: 'include'
       });
       if (!res.ok) throw new Error('Frame extraction failed');
-
       const data = await res.json();
-      setStatusMessage(data.message);
+      setStatusMessage(data.message || 'Frames extracted');
+      
+      // Clear any annotated frames from previous run
+      setAnnotatedURLs([]);
+      setCurrentFrameIndex(0);
 
-      // CLEAR out any old frames
-      setFrameURLs([]);
-
-      // We'll build new frame URLs with a cache-buster param
-      // e.g. ?cb=1679590285
+      // Add cache-buster param to avoid old images
       const now = Date.now();
-      const newFrameURLs = (data.frame_urls || []).map((url) => {
-        return `http://localhost:8098${url}?cb=${now}`;
-      });
-
+      const newFrameURLs = (data.frame_urls || []).map(url => 
+        `http://localhost:8098${url}?cb=${now}`
+      );
       setFrameURLs(newFrameURLs);
+    } catch (err) {
+      setStatusMessage(err.message);
+    }
+  };
+
+  // 4) Detect Pose
+  const handleDetectPose = async () => {
+    if (!uploadedFilename) {
+      alert('No uploaded file reference.');
+      return;
+    }
+    setStatusMessage('Detecting pose...');
+
+    try {
+      const body = { filename: uploadedFilename };
+      const res = await fetch('http://localhost:8098/api/detect_pose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('Pose detection failed');
+      const data = await res.json();
+      setStatusMessage(data.message || 'Pose detection done.');
+
+      // Build annotated frame URLs with cache-buster
+      const now = Date.now();
+      const annURLs = (data.annotated_frames || []).map(url =>
+        `http://localhost:8098${url}?cb=${now}`
+      );
+      setAnnotatedURLs(annURLs);
       setCurrentFrameIndex(0);
     } catch (err) {
       setStatusMessage(err.message);
     }
   };
 
-  // -------- Single-Frame Navigation
+  // Single-frame nav for annotated
   const handleNextFrame = () => {
-    setCurrentFrameIndex((prev) =>
-      prev < frameURLs.length - 1 ? prev + 1 : prev
-    );
+    setCurrentFrameIndex(i => (i < annotatedURLs.length - 1 ? i + 1 : i));
   };
-
   const handlePrevFrame = () => {
-    setCurrentFrameIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    setCurrentFrameIndex(i => (i > 0 ? i - 1 : 0));
   };
-
-  const totalFrames = frameURLs.length;
-  const currentFrameUrl =
-    totalFrames > 0 && currentFrameIndex < totalFrames
-      ? frameURLs[currentFrameIndex]
-      : null;
 
   return (
     <div style={{ margin: '2rem' }}>
-      <h1>Penalty Kick Frame Extraction</h1>
+      <h1>Frame & Pose Extraction</h1>
 
       <div>
         <input type="file" accept="video/*" onChange={handleFileChange} />
@@ -131,49 +147,59 @@ function App() {
 
       {statusMessage && <p>{statusMessage}</p>}
 
-      {/* Video + Extract */}
       {videoURL && (
         <div style={{ marginTop: '1rem' }}>
           <video ref={videoRef} src={videoURL} width="600" controls />
-          <div style={{ marginTop: '1rem' }}>
+          <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
             <button onClick={handleExtractFrames}>
               Extract Frames at Current Time
+            </button>
+            <button onClick={handleDetectPose} disabled={frameURLs.length === 0}>
+              Detect Pose
             </button>
           </div>
         </div>
       )}
 
-      {/* Single-Frame Viewer */}
-      {totalFrames > 0 && (
+      {/* Show extracted frames in a small grid */}
+      {frameURLs.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
-          <h3>Extracted Frames</h3>
+          <h3>Extracted Frames (Not Annotated)</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            {frameURLs.map((url, i) => (
+              <img
+                key={i}
+                src={url}
+                alt={`Frame ${i + 1}`}
+                style={{ width: '120px', border: '1px solid #ccc' }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Single-frame viewer for annotated frames */}
+      {annotatedURLs.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h3>Annotated Frames Viewer</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Prev Button */}
-            <button onClick={handlePrevFrame} disabled={currentFrameIndex <= 0}>
+            <button onClick={handlePrevFrame} disabled={currentFrameIndex === 0}>
               Prev
             </button>
-
-            {/* The main image */}
-            {currentFrameUrl ? (
-              <img
-                src={currentFrameUrl}
-                alt={`Frame ${currentFrameIndex + 1}`}
-                style={{ maxWidth: '800px', border: '1px solid #ccc' }}
-              />
-            ) : (
-              <div>No Frame</div>
-            )}
-
-            {/* Next Button */}
+            <img
+              src={annotatedURLs[currentFrameIndex]}
+              alt={`Annotated ${currentFrameIndex + 1}`}
+              style={{ maxWidth: '600px', border: '1px solid #ccc' }}
+            />
             <button
               onClick={handleNextFrame}
-              disabled={currentFrameIndex >= totalFrames - 1}
+              disabled={currentFrameIndex === annotatedURLs.length - 1}
             >
               Next
             </button>
           </div>
-          <p style={{ marginTop: '0.5rem' }}>
-            Frame {currentFrameIndex + 1} of {totalFrames}
+          <p>
+            Frame {currentFrameIndex + 1} of {annotatedURLs.length}
           </p>
         </div>
       )}

@@ -6,6 +6,7 @@ import os, uuid
 from database.db_setup import init_db
 from routes.upload_routes import upload_bp
 from routes.extract_routes import extract_bp
+from routes.pose_routes import pose_bp
 
 def create_app():
     app = Flask(__name__)
@@ -34,6 +35,7 @@ def create_app():
     # Register routes
     app.register_blueprint(upload_bp, url_prefix='/api')
     app.register_blueprint(extract_bp, url_prefix='/api')
+    app.register_blueprint(pose_bp, url_prefix='/api')
 
     @app.route('/')
     def index():
