@@ -5,4 +5,6 @@ venv_web/
 .DS_Store
 .DS_Store?
 notebook_temp_viewer/
+temp_frames/
+uploads/
 ._*
