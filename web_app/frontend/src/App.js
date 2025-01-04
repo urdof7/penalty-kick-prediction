@@ -1,21 +1,19 @@
-// App.js (place in /frontend/src/App.js, for example)
-
+// web_app/frontend/src/App.js
 import React, { useState, useRef } from 'react';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadedFilename, setUploadedFilename] = useState('');
-  const [videoURL, setVideoURL] = useState('');
   const [frameURLs, setFrameURLs] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
   const videoRef = useRef(null);
+  const [videoURL, setVideoURL] = useState('');
 
-  // 1) Handle file selection
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
-  // 2) Upload file to Flask
+  // Upload the file to /api/upload
   const handleUpload = async () => {
     if (!selectedFile) {
       alert('No file selected!');
@@ -27,62 +25,64 @@ function App() {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const res = await fetch('http://localhost:8098/upload', {
+      const res = await fetch('http://localhost:8098/api/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include' // if you need to send or receive cookies
       });
-      if (!res.ok) {
-        throw new Error('Upload failed');
-      }
+      if (!res.ok) throw new Error('Upload failed');
+
       const data = await res.json();
       setUploadedFilename(data.filename);
-      setStatusMessage(`Upload succeeded: ${data.filename}`);
 
-      // Create an object URL so we can preview the video locally
-      // This only helps user watch it; it doesn't come from the server
-      const localURL = URL.createObjectURL(selectedFile);
-      setVideoURL(localURL);
-    } catch (error) {
-      setStatusMessage(error.message);
+      // Create a local object URL to preview
+      const localVideoURL = URL.createObjectURL(selectedFile);
+      setVideoURL(localVideoURL);
+
+      setStatusMessage(`Upload success! Stored filename: ${data.filename}`);
+    } catch (err) {
+      setStatusMessage(err.message);
     }
   };
 
-  // 3) Mark midswing -> call extract_frames
+  // Extract frames at current video time
   const handleExtractFrames = async () => {
     if (!uploadedFilename) {
-      alert('No uploaded filename found. Please upload first.');
+      alert('No uploaded file reference. Please upload first.');
       return;
     }
     if (!videoRef.current) {
-      alert('No video ref found.');
+      alert('Video not loaded.');
       return;
     }
 
-    const midswingTime = videoRef.current.currentTime;
-    setStatusMessage('Extracting frames...');
+    const currentTime = videoRef.current.currentTime;
+    setStatusMessage(`Extracting frames at time: ${currentTime.toFixed(2)}s...`);
 
     try {
-      const res = await fetch('http://localhost:8098/extract_frames', {
+      const body = {
+        filename: uploadedFilename,  // must match what was stored in DB
+        timestamp: currentTime
+      };
+      const res = await fetch('http://localhost:8098/api/extract_frames', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ filename: uploadedFilename, midswing_time: midswingTime })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include'
       });
-      if (!res.ok) {
-        throw new Error('Frame extraction failed');
-      }
+      if (!res.ok) throw new Error('Frame extraction failed');
       const data = await res.json();
       setStatusMessage(data.message);
       setFrameURLs(data.frame_urls || []);
-    } catch (error) {
-      setStatusMessage(error.message);
+    } catch (err) {
+      setStatusMessage(err.message);
     }
   };
 
   return (
-    <div style={{ margin: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Penalty Kick Frame Extractor (Demo)</h1>
-
-      <div style={{ marginBottom: '1rem' }}>
+    <div style={{ margin: '2rem' }}>
+      <h1>Penalty Kick Frame Extraction</h1>
+      <div>
         <input type="file" accept="video/*" onChange={handleFileChange} />
         <button onClick={handleUpload} style={{ marginLeft: '1rem' }}>
           Upload
@@ -91,16 +91,15 @@ function App() {
 
       {statusMessage && <p>{statusMessage}</p>}
 
-      {/* If we have a local videoURL, show a video player */}
       {videoURL && (
-        <div style={{ marginBottom: '1rem' }}>
+        <div style={{ marginTop: '1rem' }}>
           <video
             ref={videoRef}
             src={videoURL}
             width="600"
             controls
           />
-          <div style={{ marginTop: '0.5rem' }}>
+          <div style={{ marginTop: '1rem' }}>
             <button onClick={handleExtractFrames}>
               Extract Frames at Current Time
             </button>
@@ -108,17 +107,16 @@ function App() {
         </div>
       )}
 
-      {/* Display extracted frames */}
       {frameURLs.length > 0 && (
-        <div>
+        <div style={{ marginTop: '2rem' }}>
           <h3>Extracted Frames:</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            {frameURLs.map((url, idx) => (
+            {frameURLs.map((url, i) => (
               <img
-                key={idx}
+                key={i}
                 src={`http://localhost:8098${url}`}
-                alt={`Frame ${idx + 1}`}
-                style={{ width: '120px', border: '1px solid #ccc' }}
+                alt={`Frame ${i + 1}`}
+                style={{ width: '150px', border: '1px solid #ccc' }}
               />
             ))}
           </div>

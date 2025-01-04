@@ -1,16 +1,15 @@
+-- web_app/backend/database/schema.sql
+
 CREATE TABLE IF NOT EXISTS videos (
     video_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT,             -- to scope to each user's session
     original_name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS kicks (
     kick_id INTEGER PRIMARY KEY AUTOINCREMENT,
     video_id INTEGER,
-    timestamp REAL,  -- or INTEGER
-    kick_direction TEXT,
-    player_name TEXT,
-    player_team TEXT,
-    goal_scored INTEGER,  -- or BOOLEAN
+    timestamp REAL,
     FOREIGN KEY (video_id) REFERENCES videos(video_id)
 );
 
