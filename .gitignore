@@ -7,4 +7,5 @@ venv_web/
 notebook_temp_viewer/
 temp_frames/
 uploads/
+web_kick_pose.db
 ._*
