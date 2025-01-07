@@ -1,116 +1,109 @@
-// web_app/frontend/src/components/GoalQuadrantOverlay.js
-import React from 'react';
-import goalImg from '../assets/goal.png';  // Adjust path as needed
+import React, { useState } from 'react';
+import goalImg from '../assets/goal.png';
 
-/**
- * Renders a goal image with 6 overlays, each tinted
- * green according to the probability in quadrantProbs[i].
- *
- * quadrantProbs = [
- *   p0, p1, p2,   // top row
- *   p3, p4, p5    // bottom row
- * ]
- */
-function GoalQuadrantOverlay({ quadrantProbs }) {
-  // For example, 600×400 image
+const GoalQuadrantOverlay = ({ quadrantProbs }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  
   const containerWidth = 600;
   const containerHeight = 400;
+  
+  const goalTop = containerHeight * 0.29;
+  const goalHeight = containerHeight * 0.4;
+  const goalWidth = containerWidth * 0.58;
+  const goalLeft = (containerWidth - goalWidth) / 2;
 
-  const cellW = containerWidth / 3;  // 3 columns
-  const cellH = containerHeight / 2; // 2 rows
+  const cellW = goalWidth / 3;
+  const cellH = goalHeight / 2;
 
-  // Simple function: scale probabilities up to 0.8 for opacity
-  const alpha = (p) => 0.8 * p;
+  const formatPercentage = (value) => {
+    const percentage = value > 1 ? value : value * 100;
+    return percentage.toFixed(1);
+  };
+
+  const maxProb = Math.max(...quadrantProbs);
+  
+  const getOpacity = (prob) => {
+    const decimal = prob > 1 ? prob / 100 : prob;
+    const relativeValue = decimal / (maxProb > 1 ? maxProb / 100 : maxProb);
+    return 0.2 + (relativeValue * 0.4);
+  };
+
+  const quadrantStyle = {
+    position: 'absolute',
+    backgroundColor: 'green',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s ease-in-out',
+    cursor: 'pointer',
+    border: 'none',
+  };
+
+  const textStyle = {
+    color: 'white',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
+    transition: 'transform 0.2s ease-in-out',
+  };
 
   return (
     <div
       style={{
         position: 'relative',
         width: containerWidth,
-        height: containerHeight
+        height: containerHeight,
       }}
     >
-      {/* The background goal image */}
       <img
         src={goalImg}
-        alt="Goal"
+        alt="Soccer Goal"
         style={{
           position: 'absolute',
           top: 0,
           left: 0,
-          width: containerWidth,
-          height: containerHeight,
+          width: '100%',
+          height: '100%',
           objectFit: 'cover',
         }}
       />
 
-      {/* Q0: top-left */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: cellW,
-        height: cellH,
-        backgroundColor: 'green',
-        opacity: alpha(quadrantProbs[0] || 0),
-      }} />
-
-      {/* Q1: top-mid */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: cellW,
-        width: cellW,
-        height: cellH,
-        backgroundColor: 'green',
-        opacity: alpha(quadrantProbs[1] || 0),
-      }} />
-
-      {/* Q2: top-right */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: cellW * 2,
-        width: cellW,
-        height: cellH,
-        backgroundColor: 'green',
-        opacity: alpha(quadrantProbs[2] || 0),
-      }} />
-
-      {/* Q3: bottom-left */}
-      <div style={{
-        position: 'absolute',
-        top: cellH,
-        left: 0,
-        width: cellW,
-        height: cellH,
-        backgroundColor: 'green',
-        opacity: alpha(quadrantProbs[3] || 0),
-      }} />
-
-      {/* Q4: bottom-mid */}
-      <div style={{
-        position: 'absolute',
-        top: cellH,
-        left: cellW,
-        width: cellW,
-        height: cellH,
-        backgroundColor: 'green',
-        opacity: alpha(quadrantProbs[4] || 0),
-      }} />
-
-      {/* Q5: bottom-right */}
-      <div style={{
-        position: 'absolute',
-        top: cellH,
-        left: cellW * 2,
-        width: cellW,
-        height: cellH,
-        backgroundColor: 'green',
-        opacity: alpha(quadrantProbs[5] || 0),
-      }} />
+      {quadrantProbs.map((prob, index) => {
+        const row = Math.floor(index / 3);
+        const col = index % 3;
+        const isHovered = hoveredIndex === index;
+        
+        return (
+          <div
+            key={index}
+            style={{
+              ...quadrantStyle,
+              top: goalTop + (row * cellH),
+              left: goalLeft + (col * cellW),
+              width: cellW,
+              height: cellH,
+              opacity: isHovered ? getOpacity(prob) + 0.15 : getOpacity(prob),
+              border: isHovered ? '2px solid rgba(255, 255, 255, 0.8)' : 'none',
+              transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+              zIndex: isHovered ? 2 : 1,
+            }}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            <span 
+              style={{
+                ...textStyle,
+                transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                fontSize: isHovered ? '1.1rem' : '1rem',
+              }}
+            >
+              {formatPercentage(prob)}%
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
-}
+};
 
 export default GoalQuadrantOverlay;
