@@ -3,6 +3,7 @@
 import os
 import sqlite3
 from database.db_setup import get_connection
+import pandas as pd
 
 def clear_session_data(session_id):
     """
@@ -154,3 +155,28 @@ def insert_pose_feature(frame_id, landmark_name, x, y, z, visibility):
     """, (frame_id, landmark_name, x, y, z, visibility))
     conn.commit()
     conn.close()
+
+def get_pose_data_for_video(session_id, video_id):
+    """
+    Returns a pandas DataFrame containing frames+pose for the given session_id + video_id,
+    with columns: [frame_id, kick_id, video_id, frame_no, landmark_name, x, y, z]
+    Merged from frames + pose_features, plus we can also join kicks if needed.
+    """
+    conn = get_connection()
+    
+    # We only merge frames that belong to this session_id & video_id
+    # Then join with pose_features
+    query = """
+    SELECT f.frame_id, f.kick_id, f.video_id, f.frame_no,
+           p.landmark_name, p.x, p.y, p.z
+    FROM frames f
+    JOIN pose_features p ON f.frame_id = p.frame_id
+    JOIN videos v ON f.video_id = v.video_id
+    WHERE v.session_id = ?
+      AND f.video_id = ?
+    ORDER BY f.frame_no ASC
+    """
+    df = pd.read_sql_query(query, conn, params=(session_id, video_id))
+    
+    conn.close()
+    return df
