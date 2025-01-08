@@ -180,3 +180,28 @@ def get_pose_data_for_video(session_id, video_id):
     
     conn.close()
     return df
+
+def insert_engineered_feature(frame_id,x_mid_hip,y_mid_hip,z_mid_hip,angle_knee_left,angle_knee_right,angle_elbow_left,angle_elbow_right,angle_ankle_left,angle_ankle_right,angle_foot_left,angle_foot_right):
+    c = get_connection()
+    cur = c.cursor()
+    cur.execute("""
+        INSERT INTO engineered_features (
+            frame_id,x_mid_hip,y_mid_hip,z_mid_hip,
+            angle_knee_left,angle_knee_right,
+            angle_elbow_left,angle_elbow_right,
+            angle_ankle_left,angle_ankle_right,
+            angle_foot_left,angle_foot_right
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+    """,(frame_id,x_mid_hip,y_mid_hip,z_mid_hip,angle_knee_left,angle_knee_right,angle_elbow_left,angle_elbow_right,angle_ankle_left,angle_ankle_right,angle_foot_left,angle_foot_right))
+    c.commit()
+    c.close()
+
+def clear_engineered_for_frames(frame_ids):
+    if not frame_ids:
+        return
+    c = get_connection()
+    cur = c.cursor()
+    placeholders = ",".join(["?"]*len(frame_ids))
+    cur.execute(f"DELETE FROM engineered_features WHERE frame_id IN ({placeholders})", frame_ids)
+    c.commit()
+    c.close()
