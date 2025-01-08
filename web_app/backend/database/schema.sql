@@ -23,13 +23,19 @@ CREATE TABLE IF NOT EXISTS frames (
     FOREIGN KEY (video_id) REFERENCES videos(video_id)
 );
 
-CREATE TABLE IF NOT EXISTS pose_features (
-    feature_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS engineered_features (
+    efeature_id INTEGER PRIMARY KEY AUTOINCREMENT,
     frame_id INTEGER,
-    landmark_name TEXT,
-    x REAL,
-    y REAL,
-    z REAL,
-    visibility REAL,
+    x_mid_hip REAL,
+    y_mid_hip REAL,
+    z_mid_hip REAL,
+    angle_knee_left REAL,
+    angle_knee_right REAL,
+    angle_elbow_left REAL,
+    angle_elbow_right REAL,
+    angle_ankle_left REAL,
+    angle_ankle_right REAL,
+    angle_foot_left REAL,
+    angle_foot_right REAL,
     FOREIGN KEY (frame_id) REFERENCES frames(frame_id)
 );
