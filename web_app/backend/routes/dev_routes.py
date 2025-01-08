@@ -17,16 +17,16 @@ def dev_nuke_all():
     Completely wipes ALL data from the database (all sessions, videos, frames, pose_features, etc.)
     and removes all files from 'uploads/', 'temp_frames/', and 'temp_annotated_frames/'.
 
-    Developer-only. Not exposed in the front-end UI. Must provide ?secret= or x-dev-secret header
+    Developer-only. Not exposed in the front-end UI. Must provide ?secret= or dev-secret header
     matching the PK_DEV_SECRET environment variable.
 
     Example usage:
       curl -X POST "http://localhost:8098/api/dev/nuke_all?secret=YOUR_SECRET"
       OR
-      curl -X POST http://localhost:8098/api/dev/nuke_all -H "x-dev-secret: YOUR_SECRET"
+      curl -X POST http://localhost:8098/api/dev/nuke_all -H "dev-secret: YOUR_SECRET"
     """
     # 1) Check the secret
-    secret_param = request.args.get('secret') or request.headers.get('x-dev-secret')
+    secret_param = request.args.get('secret') or request.headers.get('dev-secret')
     if not PK_DEV_SECRET or secret_param != PK_DEV_SECRET:
         return jsonify({"error": "Unauthorized"}), 401
 
