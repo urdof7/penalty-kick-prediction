@@ -81,7 +81,7 @@ def detect_pose_and_annotate(video_id, session_id):
                 for idx, lm in enumerate(results.pose_landmarks.landmark):
                     insert_pose_feature(
                         frame_id,
-                        f"LANDMARK_{idx}",
+                        mp_pose.PoseLandmark(idx).name,
                         lm.x,
                         lm.y,
                         lm.z,
