@@ -76,7 +76,7 @@ def extract_frames():
         frame_id = cur.lastrowid
 
         base_name = os.path.basename(src_path)
-        final_name = base_name  # if you want session_id_{base_name}, do that
+        final_name = f"{session_id}_{base_name}"
         dst_path = os.path.join(temp_frames_folder, final_name)
         shutil.copy(src_path, dst_path)
 
