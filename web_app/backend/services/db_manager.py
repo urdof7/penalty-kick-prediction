@@ -181,20 +181,73 @@ def get_pose_data_for_video(session_id, video_id):
     conn.close()
     return df
 
-def insert_engineered_feature(frame_id,x_mid_hip,y_mid_hip,z_mid_hip,angle_knee_left,angle_knee_right,angle_elbow_left,angle_elbow_right,angle_ankle_left,angle_ankle_right,angle_foot_left,angle_foot_right):
-    c = get_connection()
-    cur = c.cursor()
-    cur.execute("""
-        INSERT INTO engineered_features (
-            frame_id,x_mid_hip,y_mid_hip,z_mid_hip,
-            angle_knee_left,angle_knee_right,
-            angle_elbow_left,angle_elbow_right,
-            angle_ankle_left,angle_ankle_right,
-            angle_foot_left,angle_foot_right
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-    """,(frame_id,x_mid_hip,y_mid_hip,z_mid_hip,angle_knee_left,angle_knee_right,angle_elbow_left,angle_elbow_right,angle_ankle_left,angle_ankle_right,angle_foot_left,angle_foot_right))
-    c.commit()
-    c.close()
+def insert_engineered_feature(
+    frame_id,
+    x_hip_left, y_hip_left, x_hip_right, y_hip_right,
+    x_knee_left, y_knee_left, x_knee_right, y_knee_right,
+    x_ankle_left, y_ankle_left, x_ankle_right, y_ankle_right,
+    x_left_foot_index, y_left_foot_index,
+    x_right_foot_index, y_right_foot_index,
+    x_shoulder_left, y_shoulder_left,
+    x_shoulder_right, y_shoulder_right,
+    x_elbow_left, y_elbow_left,
+    x_elbow_right, y_elbow_right,
+    x_wrist_left, y_wrist_left,
+    x_wrist_right, y_wrist_right,
+    angle_knee_left, angle_knee_right,
+    angle_elbow_left, angle_elbow_right,
+    angle_ankle_left, angle_ankle_right,
+    angle_foot_left, angle_foot_right
+):
+    conn = get_connection()
+    cur = conn.cursor()
+    sql = """
+    INSERT INTO engineered_features (
+        frame_id,
+        x_hip_left, y_hip_left,
+        x_hip_right, y_hip_right,
+        x_knee_left, y_knee_left,
+        x_knee_right, y_knee_right,
+        x_ankle_left, y_ankle_left,
+        x_ankle_right, y_ankle_right,
+        x_left_foot_index, y_left_foot_index,
+        x_right_foot_index, y_right_foot_index,
+        x_shoulder_left, y_shoulder_left,
+        x_shoulder_right, y_shoulder_right,
+        x_elbow_left, y_elbow_left,
+        x_elbow_right, y_elbow_right,
+        x_wrist_left, y_wrist_left,
+        x_wrist_right, y_wrist_right,
+        angle_knee_left, angle_knee_right,
+        angle_elbow_left, angle_elbow_right,
+        angle_ankle_left, angle_ankle_right,
+        angle_foot_left, angle_foot_right
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """
+    cur.execute(sql, (
+        frame_id,
+        x_hip_left, y_hip_left,
+        x_hip_right, y_hip_right,
+        x_knee_left, y_knee_left,
+        x_knee_right, y_knee_right,
+        x_ankle_left, y_ankle_left,
+        x_ankle_right, y_ankle_right,
+        x_left_foot_index, y_left_foot_index,
+        x_right_foot_index, y_right_foot_index,
+        x_shoulder_left, y_shoulder_left,
+        x_shoulder_right, y_shoulder_right,
+        x_elbow_left, y_elbow_left,
+        x_elbow_right, y_elbow_right,
+        x_wrist_left, y_wrist_left,
+        x_wrist_right, y_wrist_right,
+        angle_knee_left, angle_knee_right,
+        angle_elbow_left, angle_elbow_right,
+        angle_ankle_left, angle_ankle_right,
+        angle_foot_left, angle_foot_right
+    ))
+    conn.commit()
+    conn.close()
+
 
 def clear_engineered_for_frames(frame_ids):
     if not frame_ids:

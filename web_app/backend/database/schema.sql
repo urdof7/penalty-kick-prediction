@@ -23,12 +23,38 @@ CREATE TABLE IF NOT EXISTS frames (
     FOREIGN KEY (video_id) REFERENCES videos(video_id)
 );
 
-CREATE TABLE IF NOT EXISTS engineered_features (
-    efeature_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS pose_features (
+    feature_id INTEGER PRIMARY KEY AUTOINCREMENT,
     frame_id INTEGER,
-    x_mid_hip REAL,
-    y_mid_hip REAL,
-    z_mid_hip REAL,
+    landmark_name TEXT,
+    x REAL,
+    y REAL,
+    z REAL,
+    visibility REAL,
+    FOREIGN KEY (frame_id) REFERENCES frames(frame_id)
+);
+
+CREATE TABLE IF NOT EXISTS engineered_features (
+    feature_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    frame_id INTEGER,
+
+    -- 2D coords for the main joints of interest (already normalized)
+    x_hip_left REAL,      y_hip_left REAL,
+    x_hip_right REAL,     y_hip_right REAL,
+    x_knee_left REAL,     y_knee_left REAL,
+    x_knee_right REAL,    y_knee_right REAL,
+    x_ankle_left REAL,    y_ankle_left REAL,
+    x_ankle_right REAL,   y_ankle_right REAL,
+    x_left_foot_index REAL,   y_left_foot_index REAL,
+    x_right_foot_index REAL,  y_right_foot_index REAL,
+    x_shoulder_left REAL, y_shoulder_left REAL,
+    x_shoulder_right REAL,y_shoulder_right REAL,
+    x_elbow_left REAL,    y_elbow_left REAL,
+    x_elbow_right REAL,   y_elbow_right REAL,
+    x_wrist_left REAL,    y_wrist_left REAL,
+    x_wrist_right REAL,   y_wrist_right REAL,
+
+    -- Angles
     angle_knee_left REAL,
     angle_knee_right REAL,
     angle_elbow_left REAL,
@@ -37,5 +63,6 @@ CREATE TABLE IF NOT EXISTS engineered_features (
     angle_ankle_right REAL,
     angle_foot_left REAL,
     angle_foot_right REAL,
+
     FOREIGN KEY (frame_id) REFERENCES frames(frame_id)
 );

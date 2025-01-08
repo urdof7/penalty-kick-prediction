@@ -41,9 +41,10 @@ def create_app():
     app.register_blueprint(predict_bp, url_prefix='/api')
     app.register_blueprint(dev_bp, url_prefix='/api/dev')
 
+
     @app.route('/')
     def index():
-        return "Flask with ephemeral session_id"
+        return "Flask running!"
 
     return app
 
