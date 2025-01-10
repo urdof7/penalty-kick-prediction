@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS pose_features (
 );
 
 CREATE TABLE IF NOT EXISTS engineered_features (
-    feature_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    efeature_id INTEGER PRIMARY KEY AUTOINCREMENT,
     frame_id INTEGER,
 
     -- 2D coords for the main joints of interest (already normalized)
