@@ -201,6 +201,7 @@ def insert_engineered_feature(
 ):
     conn = get_connection()
     cur = conn.cursor()
+
     sql = """
     INSERT INTO engineered_features (
         frame_id,
@@ -222,9 +223,11 @@ def insert_engineered_feature(
         angle_elbow_left, angle_elbow_right,
         angle_ankle_left, angle_ankle_right,
         angle_foot_left, angle_foot_right
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """
-    cur.execute(sql, (
+
+    # Build the tuple of values
+    args_tuple = (
         frame_id,
         x_hip_left, y_hip_left,
         x_hip_right, y_hip_right,
@@ -244,9 +247,35 @@ def insert_engineered_feature(
         angle_elbow_left, angle_elbow_right,
         angle_ankle_left, angle_ankle_right,
         angle_foot_left, angle_foot_right
-    ))
+    )
+
+    # --- DEBUG PRINTS ---
+    print("\nDEBUG: Insert SQL statement:\n", sql)
+    print("DEBUG: Number of parameters in the tuple:", len(args_tuple))
+    for i, val in enumerate(args_tuple):
+        print(f"DEBUG param index={i} => {val!r}")
+    # ---------------------
+
+    cur.execute(sql, args_tuple)
     conn.commit()
     conn.close()
+
+
+def get_engineered_data(session_id, video_id):
+    conn = get_connection()
+    query = """
+    SELECT ef.*,
+           f.frame_no
+    FROM engineered_features ef
+    JOIN frames f ON ef.frame_id = f.frame_id
+    JOIN videos v ON f.video_id = v.video_id
+    WHERE v.session_id = ?
+      AND f.video_id = ?
+    ORDER BY f.frame_no ASC
+    """
+    df = pd.read_sql_query(query, conn, params=(session_id, video_id))
+    conn.close()
+    return df
 
 
 def clear_engineered_for_frames(frame_ids):
