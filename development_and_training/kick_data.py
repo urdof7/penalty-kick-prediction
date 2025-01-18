@@ -249,7 +249,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
 
 
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "01:12.08",
  "direction": 4,
  "player_name": None,
@@ -258,7 +258,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "01:45.64",
  "direction": 4,
  "player_name": None,
@@ -267,7 +267,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "02:40.92",
  "direction": 3,
  "player_name": None,
@@ -276,7 +276,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "03:24.84",
  "direction": 4,
  "player_name": None,
@@ -285,7 +285,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "04:18.16",
  "direction": 4,
  "player_name": None,
@@ -294,7 +294,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "05:05.16",
  "direction": 5,
  "player_name": None,
@@ -303,7 +303,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "05:55.68",
  "direction": 1,
  "player_name": None,
@@ -312,7 +312,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "07:04.24",
  "direction": 4,
  "player_name": None,
@@ -321,7 +321,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "07:56.24",
  "direction": 5,
  "player_name": None,
@@ -330,7 +330,7 @@ kick_data = [ # video_name, timestamp, direction attributes are required; the re
  "num_frames": 10
  },
  {
- "video_name": "Croatia_v_Denmark_Full_2018",
+ "video_name": "Croatia_v_Denmark_Full_2018.mp4",
  "timestamp": "08:53.32",
  "direction": 4,
  "player_name": None,
