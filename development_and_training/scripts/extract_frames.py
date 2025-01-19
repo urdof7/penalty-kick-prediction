@@ -85,7 +85,7 @@ def get_frame_rate(video_url):
     return num / denom
 
 def extract_frames(video_name, timestamp, direction, player_name, player_team, goal_scored, num_frames):
-    # Insert or find video
+    # 1. Insert/find video in 'videos' table
     cursor.execute("SELECT video_id FROM videos WHERE original_name = ?", (video_name,))
     row = cursor.fetchone()
     if row is None:
@@ -96,10 +96,11 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     else:
         video_id = row[0]
 
-    # Convert timestamp to seconds
+    # 2. Convert "MM:SS" timestamp to total seconds
     minutes, seconds = timestamp.split(':')
-    t = int(minutes)*60 + float(seconds)
+    t = int(minutes) * 60 + float(seconds)
 
+    # 3. Build the remote video URL and find frame rate
     video_url = hf_hub_url(
         repo_id=VIDEO_REPO_ID,
         filename=f"{VIDEOS_FOLDER}/{video_name}",
@@ -108,43 +109,54 @@ def extract_frames(video_name, timestamp, direction, player_name, player_team, g
     )
     frame_rate = get_frame_rate(video_url)
 
-    duration_before = num_frames / frame_rate
-    duration_after = num_frames / frame_rate
-    start_time = max(t - duration_before, 0)
-    total_duration = duration_before + (1/frame_rate) + duration_after
-
-    # Determine kick_number
-    cursor.execute("SELECT COUNT(*)+1 FROM kicks WHERE video_id = ?", (video_id,))
-    kick_number = cursor.fetchone()[0]
-
+    # 4. Insert the 'kick' record (or ignore if already there)
     cursor.execute("""
         INSERT OR IGNORE INTO kicks (video_id, timestamp, kick_direction, player_name, player_team, goal_scored)
         VALUES (?, ?, ?, ?, ?, ?)
     """, (video_id, timestamp, direction, player_name, player_team, goal_scored))
     conn.commit()
 
+    # 5. Fetch the kick_id
     cursor.execute("SELECT kick_id FROM kicks WHERE video_id=? AND timestamp=?", (video_id, timestamp))
     kick_id = cursor.fetchone()[0]
 
+    # 6. Determine the sequential "kick_number" for naming frames
+    cursor.execute("SELECT COUNT(*)+1 FROM kicks WHERE video_id = ?", (video_id,))
+    kick_number = cursor.fetchone()[0]
+
+    # 7. Prepare a temp directory for extraction
     temp_dir = tempfile.mkdtemp(prefix="frame_extraction_")
-    output_pattern = os.path.join(temp_dir, f"VID_{video_id}_KICK_{kick_number}_FRAME_%03d.png")
 
-    ffmpeg_cmd = [
-        "ffmpeg", "-hide_banner", "-loglevel", "error",
-        "-ss", str(start_time),
-        "-i", video_url,
-        "-t", str(total_duration),
-        "-vf", f"fps={frame_rate}",
-        "-start_number", "1",
-        output_pattern
-    ]
-    subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
+    # 8. We want exactly (2 * num_frames + 1) frames, with the middle at timestamp t
+    total_extracted = 2 * num_frames + 1
     frames_data = []
-    total_extracted = 2*num_frames + 1
-    for i in range(1, total_extracted+1):
+
+    # 9. Single-frame extraction for each index i
+    #    i runs from 1 to total_extracted (for naming consistency),
+    #    but we compute the offset from (i - (num_frames+1)).
+    #    So the middle is i = num_frames+1 => offset=0 => time = t
+    for i in range(1, total_extracted + 1):
         frame_filename = f"VID_{video_id}_KICK_{kick_number}_FRAME_{i:03d}.png"
         local_frame_path = os.path.join(temp_dir, frame_filename)
+
+        offset_index = i - (num_frames + 1)
+        frame_time = t + offset_index * (1.0 / frame_rate)
+
+        # Clamp frame_time to 0 so we don't go negative
+        if frame_time < 0:
+            frame_time = 0
+
+        # Extract exactly 1 frame at 'frame_time' (closest frame)
+        ffmpeg_cmd = [
+            "ffmpeg", "-hide_banner", "-loglevel", "error",
+            "-ss", str(frame_time),
+            "-i", video_url,
+            "-frames:v", "1",
+            local_frame_path
+        ]
+        subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Insert or ignore frame record into DB
         cursor.execute("""
             INSERT OR IGNORE INTO frames (kick_id, video_id, frame_no, frame_path)
             VALUES (?, ?, ?, ?)
