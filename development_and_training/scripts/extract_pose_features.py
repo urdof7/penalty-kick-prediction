@@ -64,16 +64,16 @@ def process_frame_mediapipe(local_pose, local_frame: str, local_annotated: str, 
     Returns True on success or if no landmarks found (but no crash),
     False if any catastrophic failure (like missing file).
     """
-    # Landmarks of interest
-    landmarks_of_interest = [
-        mp.solutions.pose.PoseLandmark.LEFT_HIP,    mp.solutions.pose.PoseLandmark.RIGHT_HIP,
-        mp.solutions.pose.PoseLandmark.LEFT_KNEE,   mp.solutions.pose.PoseLandmark.RIGHT_KNEE,
-        mp.solutions.pose.PoseLandmark.LEFT_ANKLE,  mp.solutions.pose.PoseLandmark.RIGHT_ANKLE,
-        mp.solutions.pose.PoseLandmark.LEFT_FOOT_INDEX, mp.solutions.pose.PoseLandmark.RIGHT_FOOT_INDEX,
-        mp.solutions.pose.PoseLandmark.LEFT_SHOULDER, mp.solutions.pose.PoseLandmark.RIGHT_SHOULDER,
-        mp.solutions.pose.PoseLandmark.LEFT_ELBOW,  mp.solutions.pose.PoseLandmark.RIGHT_ELBOW,
-        mp.solutions.pose.PoseLandmark.LEFT_WRIST,  mp.solutions.pose.PoseLandmark.RIGHT_WRIST
-    ]
+    # Landmarks of interest, not used right now since it limits number of complete sequence extractions
+    # landmarks_of_interest = [
+    #     mp.solutions.pose.PoseLandmark.LEFT_HIP,    mp.solutions.pose.PoseLandmark.RIGHT_HIP,
+    #     mp.solutions.pose.PoseLandmark.LEFT_KNEE,   mp.solutions.pose.PoseLandmark.RIGHT_KNEE,
+    #     mp.solutions.pose.PoseLandmark.LEFT_ANKLE,  mp.solutions.pose.PoseLandmark.RIGHT_ANKLE,
+    #     mp.solutions.pose.PoseLandmark.LEFT_FOOT_INDEX, mp.solutions.pose.PoseLandmark.RIGHT_FOOT_INDEX,
+    #     mp.solutions.pose.PoseLandmark.LEFT_SHOULDER, mp.solutions.pose.PoseLandmark.RIGHT_SHOULDER,
+    #     mp.solutions.pose.PoseLandmark.LEFT_ELBOW,  mp.solutions.pose.PoseLandmark.RIGHT_ELBOW,
+    #     mp.solutions.pose.PoseLandmark.LEFT_WRIST,  mp.solutions.pose.PoseLandmark.RIGHT_WRIST
+    # ]
 
     # Read image
     img = cv2.imread(local_frame)
@@ -93,12 +93,12 @@ def process_frame_mediapipe(local_pose, local_frame: str, local_annotated: str, 
         cv2.imwrite(local_annotated, ann_img)
 
         # Insert selected landmark data into DB
-        for lm_enum in landmarks_of_interest:
-            idx = lm_enum.value
+        # for ___ in landmarks_of_interest: - switch back to this to use landmarks of interest
+        for idx, lm in enumerate(results.pose_landmarks.landmark):
             lm = results.pose_landmarks.landmark[idx]
             insert_pose_feature(
                 frame_id,
-                lm_enum.name,
+                lm.name
                 lm.x,
                 lm.y,
                 lm.z,
