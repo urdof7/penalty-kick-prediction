@@ -1,6 +1,12 @@
 __pycache__/
 venv/
+venv_devtrain/
+venv_web/
 .DS_Store
 .DS_Store?
 notebook_temp_viewer/
+temp_frames/
+temp_annotated_frames/
+uploads/
+web_kick_pose.db
 ._*
